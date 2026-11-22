@@ -30,7 +30,7 @@ import plotly.graph_objects as go
 
 # Configure Streamlit page layout and branding
 st.set_page_config(
-    page_title="India Unemployment Analytics | Oasis Infobyte Task 2",
+    page_title="Indian Unemployment Analytics Dashboard | Oasis Infobyte Task 2",
     page_icon="📈",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -147,7 +147,7 @@ def main():
     df_full = load_data()
 
     # Header
-    st.markdown('<div class="main-title">🇮🇳 India Unemployment Analytics Dashboard</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-title">🇮🇳 Indian Unemployment Analytics Dashboard</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-title">OASIS INFOBYTE Data Science Internship | Task 2: Historical CMIE Macroeconomic Analysis (2019-2020)</div>', unsafe_allow_html=True)
 
     # ---------------------------------------------------------
@@ -241,7 +241,7 @@ def main():
     with kpi2:
         st.markdown(f"""
         <div class="kpi-card">
-            <div class="kpi-label">Highest Unemployment Region</div>
+            <div class="kpi-label">Highest Unemployment State</div>
             <div class="kpi-value" style="color: #dc2626;">{highest_state}</div>
             <div class="kpi-delta delta-positive">Avg Rate: {highest_rate:.2f}%</div>
         </div>
@@ -250,7 +250,7 @@ def main():
     with kpi3:
         st.markdown(f"""
         <div class="kpi-card">
-            <div class="kpi-label">Lowest Unemployment Region</div>
+            <div class="kpi-label">Lowest Unemployment State</div>
             <div class="kpi-value" style="color: #059669;">{lowest_state}</div>
             <div class="kpi-delta delta-negative">Avg Rate: {lowest_rate:.2f}%</div>
         </div>
@@ -447,13 +447,28 @@ def main():
     with tab4:
         st.subheader("Empirical Assessment of the COVID-19 Lockdown Shock")
 
-        pre_mask = df_full["COVID_Phase"] == "Pre-COVID"
-        post_mask = df_full["COVID_Phase"] == "COVID/Post-COVID"
+        # Dynamically apply active geographical and sector filters to the COVID comparison cohort
+        covid_cohort = df_full.copy()
+        if selected_area != "All Sectors":
+            covid_cohort = covid_cohort[covid_cohort["Area"] == selected_area]
+        if selected_zone != "All Zones":
+            covid_cohort = covid_cohort[covid_cohort["Zone"] == selected_zone]
+        if selected_states:
+            covid_cohort = covid_cohort[covid_cohort["State"].isin(selected_states)]
 
-        pre_mean = float(df_full[pre_mask]["Estimated_Unemployment_Rate"].mean())
-        post_mean = float(df_full[post_mask]["Estimated_Unemployment_Rate"].mean())
-        abs_surge = post_mean - pre_mean
-        pct_surge = (abs_surge / pre_mean) * 100
+        pre_mask = covid_cohort["COVID_Phase"] == "Pre-COVID"
+        post_mask = covid_cohort["COVID_Phase"] == "COVID/Post-COVID"
+
+        if pre_mask.any() and post_mask.any():
+            pre_mean = float(covid_cohort[pre_mask]["Estimated_Unemployment_Rate"].mean())
+            post_mean = float(covid_cohort[post_mask]["Estimated_Unemployment_Rate"].mean())
+            abs_surge = post_mean - pre_mean
+            pct_surge = (abs_surge / pre_mean) * 100 if pre_mean != 0 else 0.0
+        else:
+            pre_mean = float(df_full[df_full["COVID_Phase"] == "Pre-COVID"]["Estimated_Unemployment_Rate"].mean())
+            post_mean = float(df_full[df_full["COVID_Phase"] == "COVID/Post-COVID"]["Estimated_Unemployment_Rate"].mean())
+            abs_surge = post_mean - pre_mean
+            pct_surge = (abs_surge / pre_mean) * 100
 
         col4_1, col4_2, col4_3 = st.columns(3)
         with col4_1:
@@ -466,7 +481,8 @@ def main():
         c1, c2 = st.columns(2)
         with c1:
             # Sector comparison: Rural vs Urban Pre/Post
-            sector_agg = df_full.groupby(["Area", "COVID_Phase"])["Estimated_Unemployment_Rate"].mean().reset_index()
+            eval_sector_df = covid_cohort if selected_area == "All Sectors" else df_full
+            sector_agg = eval_sector_df.groupby(["Area", "COVID_Phase"])["Estimated_Unemployment_Rate"].mean().reset_index()
             fig_sec = px.bar(
                 sector_agg,
                 x="Area",
@@ -482,21 +498,24 @@ def main():
 
         with c2:
             # States with highest absolute surge
-            pivot = df_full.pivot_table(index="State", columns="COVID_Phase", values="Estimated_Unemployment_Rate", aggfunc="mean")
-            pivot["Absolute_Surge"] = pivot["COVID/Post-COVID"] - pivot["Pre-COVID"]
-            top_surge_df = pivot.sort_values(by="Absolute_Surge", ascending=False).head(8).reset_index()
+            pivot = covid_cohort.pivot_table(index="State", columns="COVID_Phase", values="Estimated_Unemployment_Rate", aggfunc="mean")
+            if "COVID/Post-COVID" in pivot.columns and "Pre-COVID" in pivot.columns:
+                pivot["Absolute_Surge"] = pivot["COVID/Post-COVID"] - pivot["Pre-COVID"]
+                top_surge_df = pivot.sort_values(by="Absolute_Surge", ascending=False).head(8).reset_index()
 
-            fig_surge = px.bar(
-                top_surge_df,
-                x="State",
-                y="Absolute_Surge",
-                color="Absolute_Surge",
-                color_continuous_scale="Reds",
-                title="States Experiencing Largest Absolute Lockdown Spikes",
-                labels={"Absolute_Surge": "Rate Surge (% Points)"}
-            )
-            fig_surge.update_layout(template="plotly_white")
-            st.plotly_chart(fig_surge, width="stretch")
+                fig_surge = px.bar(
+                    top_surge_df,
+                    x="State",
+                    y="Absolute_Surge",
+                    color="Absolute_Surge",
+                    color_continuous_scale="Reds",
+                    title="States Experiencing Largest Absolute Lockdown Spikes",
+                    labels={"Absolute_Surge": "Rate Surge (% Points)"}
+                )
+                fig_surge.update_layout(template="plotly_white")
+                st.plotly_chart(fig_surge, width="stretch")
+            else:
+                st.info("Both Pre-COVID and Post-COVID observations are required to compute state-level delta.")
 
         st.warning("""
         **Methodological Distinction: Association vs. Causation:**  
@@ -513,13 +532,14 @@ def main():
 
         col5_1, col5_2 = st.columns([1.1, 0.9])
         with col5_1:
+            has_enough_samples = len(filtered_df.dropna(subset=["Estimated_Labour_Participation_Rate", "Estimated_Unemployment_Rate"])) >= 3
             fig_scatter = px.scatter(
                 filtered_df,
                 x="Estimated_Labour_Participation_Rate",
                 y="Estimated_Unemployment_Rate",
                 color="COVID_Phase",
                 symbol="Area",
-                trendline="ols",
+                trendline="ols" if has_enough_samples else None,
                 color_discrete_map={"Pre-COVID": THEME_BLUE, "COVID/Post-COVID": THEME_RED},
                 title="Labour Participation Rate vs. Unemployment Rate",
                 labels={

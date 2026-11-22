@@ -122,7 +122,7 @@ The raw dataset contains 768 rows. Data cleaning identified that rows 740 to 767
 ### 1. Descriptive Summary Statistics
 | Indicator | Mean | Std Dev | Median | Q1 (25%) | Q3 (75%) | Min | Max | Skewness |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Unemployment Rate (%)** | **11.79** | 10.73 | **8.35** | 4.60 | 15.86 | 0.00 | **75.85** | **+1.89** |
+| **Unemployment Rate (%)** | **11.79** | 10.72 | **8.35** | 4.60 | 15.86 | 0.00 | **75.85** | **+1.89** |
 | **Employed Headcount** | 5,314,721 | 5,839,769 | 2,746,640 | 1,190,424 | 7,456,645 | 49,420 | 45,777,509 | +2.57 |
 | **Labour Participation Rate (%)** | **42.63** | 8.11 | **41.16** | 37.14 | 45.60 | 13.33 | 72.57 | +0.33 |
 

@@ -26,7 +26,7 @@ All validation procedures were executed directly against real data; **zero metri
 | **REQ-05** | Date column correctly parsed | `pd.api.types.is_datetime64_any_dtype` | **PASSED** | Dates parsed from `%d-%m-%Y`; span May 2019 to June 2020 |
 | **REQ-06** | Numerical column validation | Type checks on Unemployment, Employed, LPR | **PASSED** | Cast to float64/int64; zero nulls post-cleaning |
 | **REQ-07** | Duplicate observation detection | Subset tuple check on `(State, Date, Area)` | **PASSED** | Exactly 0 duplicate records in the 740 observations |
-| **REQ-08** | Descriptive statistics calculation | Mathematical verification of Mean, Median, Mode | **PASSED** | Mean=11.79%, Median=8.35%, Mode=8.23%, Std=10.73%, Skewness=+1.89 |
+| **REQ-08** | Descriptive statistics calculation | Mathematical verification of Mean, Median, Mode | **PASSED** | Mean=11.79%, Median=8.35%, Mode=8.23%, Std=10.72%, Skewness=+1.89 |
 | **REQ-09** | Regional & State-wise rankings | Groupby aggregations across all 28 states | **PASSED** | All 28 states ranked; Tripura highest (28.35%), Meghalaya lowest (4.80%) |
 | **REQ-10** | Monthly temporal trend aggregation | Date-based time series aggregation | **PASSED** | Monthly means calculated; peak shock documented in Apr-May 2020 |
 | **REQ-11** | COVID-19 pandemic shock analysis | Baseline split at March 1, 2020 | **PASSED** | Pre-COVID: 9.51%, Post-COVID: 17.77%, Absolute Surge: +8.26%, Relative: +86.91% |
@@ -41,7 +41,7 @@ All validation procedures were executed directly against real data; **zero metri
 ### Core Statistical Indicators (Cleaned Dataset: 740 Observations)
 * **Overall Average Unemployment Rate:** **11.79%**
 * **Median Unemployment Rate:** **8.35%**
-* **Standard Deviation:** **10.73%**
+* **Standard Deviation:** **10.72%** (sample standard deviation $s = 10.7213\%$, $\text{ddof}=1$)
 * **Skewness:** **+1.89** (strongly right-skewed due to lockdown outliers)
 * **Average Labour Participation Rate:** **42.63%**
 * **Average Employed Workforce:** **5,314,721** persons per observation unit
