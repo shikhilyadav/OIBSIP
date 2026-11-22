@@ -7,8 +7,10 @@ Unemployment Analysis with Python (India).
 Features:
 - Professional White & Emerald Green UI/UX theme.
 - Dynamic KPI metrics calculated from active filters.
-- Interactive Plotly Express & Graph Objects visualizations.
+- Interactive Plotly Express & Graph Objects visualizations (including OLS trendlines).
 - Comprehensive filtering by State, Date Range, Sector (Rural/Urban), and COVID Phase.
+- Robust data type casting and safe handling for PyArrow serialization.
+- Automatic fallback runner when launched via bare `python app.py`.
 - 6 Modular Sections:
   1. Overview & High-Level KPIs
   2. Regional & State-wise Analysis
@@ -104,7 +106,10 @@ st.markdown(f"""
 
 @st.cache_data
 def load_data():
-    """Loads and caches the standardized cleaned CMIE dataset."""
+    """
+    Loads, sanitizes, and caches the standardized CMIE dataset.
+    Explicitly enforces numeric typing to prevent PyArrow serialization mismatches.
+    """
     dashboard_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(dashboard_dir)
     data_path = os.path.join(project_root, "data", "processed", "unemployment_cleaned.csv")
@@ -122,7 +127,19 @@ def load_data():
     else:
         df = pd.read_csv(data_path)
 
-    df["Date"] = pd.to_datetime(df["Date"])
+    # Robust type casting to guarantee clean numerical operations and PyArrow compatibility
+    df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+    numeric_cols = [
+        "Estimated_Unemployment_Rate",
+        "Estimated_Employed",
+        "Estimated_Labour_Participation_Rate"
+    ]
+    for col in numeric_cols:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    # Drop any null records in essential dimensions
+    df.dropna(subset=["Estimated_Unemployment_Rate", "Date", "State"], inplace=True)
     return df
 
 
@@ -200,16 +217,16 @@ def main():
     # ---------------------------------------------------------
     # DYNAMIC TOP KPI CARDS
     # ---------------------------------------------------------
-    avg_unemp = filtered_df["Estimated_Unemployment_Rate"].mean()
-    median_unemp = filtered_df["Estimated_Unemployment_Rate"].median()
-    avg_lpr = filtered_df["Estimated_Labour_Participation_Rate"].mean()
+    avg_unemp = float(filtered_df["Estimated_Unemployment_Rate"].mean())
+    median_unemp = float(filtered_df["Estimated_Unemployment_Rate"].median())
+    avg_lpr = float(filtered_df["Estimated_Labour_Participation_Rate"].mean())
     total_obs = len(filtered_df)
 
     state_group = filtered_df.groupby("State")["Estimated_Unemployment_Rate"].mean()
-    highest_state = state_group.idxmax() if not state_group.empty else "N/A"
-    highest_rate = state_group.max() if not state_group.empty else 0.0
-    lowest_state = state_group.idxmin() if not state_group.empty else "N/A"
-    lowest_rate = state_group.min() if not state_group.empty else 0.0
+    highest_state = str(state_group.idxmax()) if not state_group.empty else "N/A"
+    highest_rate = float(state_group.max()) if not state_group.empty else 0.0
+    lowest_state = str(state_group.idxmin()) if not state_group.empty else "N/A"
+    lowest_rate = float(state_group.min()) if not state_group.empty else 0.0
 
     kpi1, kpi2, kpi3, kpi4 = st.columns(4)
     with kpi1:
@@ -217,7 +234,7 @@ def main():
         <div class="kpi-card">
             <div class="kpi-label">Average Unemployment Rate</div>
             <div class="kpi-value">{avg_unemp:.2f}%</div>
-            <div class="kpi-delta">Median: {median_unemp:.2f}% ({total_obs} records)</div>
+            <div class="kpi-delta">Median: {median_unemp:.2f}% ({total_obs:,d} records)</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -282,35 +299,44 @@ def main():
             )
             fig_dist.add_vline(x=avg_unemp, line_dash="dash", line_color=THEME_RED, annotation_text=f"Mean: {avg_unemp:.2f}%")
             fig_dist.update_layout(template="plotly_white", margin=dict(l=20, r=20, t=40, b=20))
-            st.plotly_chart(fig_dist, use_container_width=True)
+            st.plotly_chart(fig_dist, width="stretch")
 
         with col_r:
-            # Descriptive Statistics Table
+            # Descriptive Statistics Table - All string types to prevent Arrow conversion conflicts
             st.markdown("#### Summary Statistical Indicators")
             summary_stats = pd.DataFrame({
-                "Metric": ["Observation Count", "Mean (%)", "Standard Deviation (%)", "Median (%)", "25th Percentile (%)", "75th Percentile (%)", "Min (%)", "Max (%)"],
+                "Metric": [
+                    "Observation Count",
+                    "Mean (%)",
+                    "Standard Deviation (%)",
+                    "Median (%)",
+                    "25th Percentile (%)",
+                    "75th Percentile (%)",
+                    "Min (%)",
+                    "Max (%)"
+                ],
                 "Unemployment Rate": [
-                    len(filtered_df),
-                    f"{filtered_df['Estimated_Unemployment_Rate'].mean():.2f}",
-                    f"{filtered_df['Estimated_Unemployment_Rate'].std():.2f}",
-                    f"{filtered_df['Estimated_Unemployment_Rate'].median():.2f}",
-                    f"{filtered_df['Estimated_Unemployment_Rate'].quantile(0.25):.2f}",
-                    f"{filtered_df['Estimated_Unemployment_Rate'].quantile(0.75):.2f}",
-                    f"{filtered_df['Estimated_Unemployment_Rate'].min():.2f}",
-                    f"{filtered_df['Estimated_Unemployment_Rate'].max():.2f}"
+                    f"{len(filtered_df):,d}",
+                    f"{filtered_df['Estimated_Unemployment_Rate'].mean():.2f}%",
+                    f"{filtered_df['Estimated_Unemployment_Rate'].std():.2f}%",
+                    f"{filtered_df['Estimated_Unemployment_Rate'].median():.2f}%",
+                    f"{filtered_df['Estimated_Unemployment_Rate'].quantile(0.25):.2f}%",
+                    f"{filtered_df['Estimated_Unemployment_Rate'].quantile(0.75):.2f}%",
+                    f"{filtered_df['Estimated_Unemployment_Rate'].min():.2f}%",
+                    f"{filtered_df['Estimated_Unemployment_Rate'].max():.2f}%"
                 ],
                 "Labour Participation": [
-                    len(filtered_df),
-                    f"{filtered_df['Estimated_Labour_Participation_Rate'].mean():.2f}",
-                    f"{filtered_df['Estimated_Labour_Participation_Rate'].std():.2f}",
-                    f"{filtered_df['Estimated_Labour_Participation_Rate'].median():.2f}",
-                    f"{filtered_df['Estimated_Labour_Participation_Rate'].quantile(0.25):.2f}",
-                    f"{filtered_df['Estimated_Labour_Participation_Rate'].quantile(0.75):.2f}",
-                    f"{filtered_df['Estimated_Labour_Participation_Rate'].min():.2f}",
-                    f"{filtered_df['Estimated_Labour_Participation_Rate'].max():.2f}"
+                    f"{len(filtered_df):,d}",
+                    f"{filtered_df['Estimated_Labour_Participation_Rate'].mean():.2f}%",
+                    f"{filtered_df['Estimated_Labour_Participation_Rate'].std():.2f}%",
+                    f"{filtered_df['Estimated_Labour_Participation_Rate'].median():.2f}%",
+                    f"{filtered_df['Estimated_Labour_Participation_Rate'].quantile(0.25):.2f}%",
+                    f"{filtered_df['Estimated_Labour_Participation_Rate'].quantile(0.75):.2f}%",
+                    f"{filtered_df['Estimated_Labour_Participation_Rate'].min():.2f}%",
+                    f"{filtered_df['Estimated_Labour_Participation_Rate'].max():.2f}%"
                 ]
             })
-            st.dataframe(summary_stats, hide_index=True, use_container_width=True)
+            st.dataframe(summary_stats, hide_index=True, width="stretch")
 
             st.info("""
             **Observation:** The unemployment distribution exhibits pronounced right-skewness.
@@ -343,13 +369,15 @@ def main():
             )
             fig_bar.add_vline(x=avg_unemp, line_dash="dot", line_color="red", annotation_text="Filtered Average")
             fig_bar.update_layout(template="plotly_white", margin=dict(l=20, r=20, t=40, b=20))
-            st.plotly_chart(fig_bar, use_container_width=True)
+            st.plotly_chart(fig_bar, width="stretch")
 
         with col2_2:
             st.markdown("#### Top 10 States with Highest Unemployment")
             top10_df = state_agg.sort_values(by="Estimated_Unemployment_Rate", ascending=False).head(10).reset_index(drop=True)
             top10_df.index += 1
-            st.dataframe(top10_df.rename(columns={"Estimated_Unemployment_Rate": "Avg Rate (%)"}), use_container_width=True)
+            top10_display = top10_df.rename(columns={"Estimated_Unemployment_Rate": "Avg Rate (%)"})
+            top10_display["Avg Rate (%)"] = top10_display["Avg Rate (%)"].round(2)
+            st.dataframe(top10_display, width="stretch")
 
             # Macro Zone Breakdown
             st.markdown("#### Macro Geographical Zone Comparison")
@@ -363,7 +391,7 @@ def main():
                 hole=0.4
             )
             fig_zone.update_layout(margin=dict(l=10, r=10, t=35, b=10))
-            st.plotly_chart(fig_zone, use_container_width=True)
+            st.plotly_chart(fig_zone, width="stretch")
 
     # ---------------------------------------------------------
     # TAB 3: MONTHLY TRENDS
@@ -390,7 +418,7 @@ def main():
             annotation_text="Nationwide Lockdown (Mar 24, 2020)"
         )
         fig_time.update_layout(template="plotly_white", height=450)
-        st.plotly_chart(fig_time, use_container_width=True)
+        st.plotly_chart(fig_time, width="stretch")
 
         # Multi-state comparative time series
         st.markdown("#### Comparative Trajectory Across Select States")
@@ -411,7 +439,7 @@ def main():
                 labels={"Estimated_Unemployment_Rate": "Unemployment Rate (%)"}
             )
             fig_comp.update_layout(template="plotly_white", height=450)
-            st.plotly_chart(fig_comp, use_container_width=True)
+            st.plotly_chart(fig_comp, width="stretch")
 
     # ---------------------------------------------------------
     # TAB 4: COVID-19 IMPACT
@@ -422,8 +450,8 @@ def main():
         pre_mask = df_full["COVID_Phase"] == "Pre-COVID"
         post_mask = df_full["COVID_Phase"] == "COVID/Post-COVID"
 
-        pre_mean = df_full[pre_mask]["Estimated_Unemployment_Rate"].mean()
-        post_mean = df_full[post_mask]["Estimated_Unemployment_Rate"].mean()
+        pre_mean = float(df_full[pre_mask]["Estimated_Unemployment_Rate"].mean())
+        post_mean = float(df_full[post_mask]["Estimated_Unemployment_Rate"].mean())
         abs_surge = post_mean - pre_mean
         pct_surge = (abs_surge / pre_mean) * 100
 
@@ -450,7 +478,7 @@ def main():
                 labels={"Estimated_Unemployment_Rate": "Mean Unemployment Rate (%)"}
             )
             fig_sec.update_layout(template="plotly_white")
-            st.plotly_chart(fig_sec, use_container_width=True)
+            st.plotly_chart(fig_sec, width="stretch")
 
         with c2:
             # States with highest absolute surge
@@ -468,7 +496,7 @@ def main():
                 labels={"Absolute_Surge": "Rate Surge (% Points)"}
             )
             fig_surge.update_layout(template="plotly_white")
-            st.plotly_chart(fig_surge, use_container_width=True)
+            st.plotly_chart(fig_surge, width="stretch")
 
         st.warning("""
         **Methodological Distinction: Association vs. Causation:**  
@@ -500,7 +528,7 @@ def main():
                 }
             )
             fig_scatter.update_layout(template="plotly_white")
-            st.plotly_chart(fig_scatter, use_container_width=True)
+            st.plotly_chart(fig_scatter, width="stretch")
 
         with col5_2:
             # Correlation Heatmap
@@ -517,7 +545,7 @@ def main():
                 labels=dict(color="Pearson r")
             )
             fig_corr.update_layout(height=420)
-            st.plotly_chart(fig_corr, use_container_width=True)
+            st.plotly_chart(fig_corr, width="stretch")
 
         st.info("""
         **Labour Participation Takeaways:**
@@ -551,4 +579,26 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        from streamlit.runtime.scriptrunner import get_script_run_context
+        is_streamlit = get_script_run_context() is not None
+    except Exception:
+        is_streamlit = False
+
+    if is_streamlit:
+        main()
+    else:
+        # Gracefully handle when user accidentally runs bare `python app.py`
+        import subprocess
+        print("=" * 75)
+        print("[NOTICE] Detected execution via bare 'python'.")
+        print("Streamlit applications must be run using the Streamlit Web CLI.")
+        print(f"Launching automatically via: python -m streamlit run \"{os.path.abspath(__file__)}\"")
+        print("=" * 75)
+        cmd = [sys.executable, "-m", "streamlit", "run", os.path.abspath(__file__)]
+        if len(sys.argv) > 1:
+            cmd.extend(sys.argv[1:])
+        try:
+            subprocess.run(cmd)
+        except KeyboardInterrupt:
+            print("\n[INFO] Dashboard stopped by user.")

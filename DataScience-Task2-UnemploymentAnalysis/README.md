@@ -187,9 +187,13 @@ The interactive web application is located at [`dashboard/app.py`](./dashboard/a
    - *Tab 6: Economic Insights & Policy Recommendations*
 
 ```bash
-# Launch the Dashboard
-streamlit run dashboard/app.py
+# Option A: From inside DataScience-Task2-UnemploymentAnalysis/
+python -m streamlit run dashboard/app.py
+
+# Option B: From OIBSIP root workspace
+python -m streamlit run DataScience-Task2-UnemploymentAnalysis/dashboard/app.py
 ```
+> **Note for Windows PowerShell:** Always prefer `python -m streamlit run` rather than bare `streamlit run` to ensure execution regardless of whether the Python Scripts folder is added to your Windows user `PATH`. An automatic fallback wrapper is also embedded in `dashboard/app.py` so accidental execution via `python dashboard/app.py` forwards seamlessly to Streamlit.
 
 ---
 
@@ -230,11 +234,14 @@ python src/analysis.py
 # Step 4: Generate all 8 publication visualizations
 python src/visualizations.py
 
-# Step 5: Run automated test suite
+# Step 5: Run automated test suite (12 tests)
+# From inside DataScience-Task2-UnemploymentAnalysis/:
 python -m unittest tests/test_pipeline.py
+# Or from OIBSIP root:
+python -m unittest DataScience-Task2-UnemploymentAnalysis/tests/test_pipeline.py
 
 # Step 6: Launch Streamlit Dashboard
-streamlit run dashboard/app.py
+python -m streamlit run dashboard/app.py
 ```
 
 ---

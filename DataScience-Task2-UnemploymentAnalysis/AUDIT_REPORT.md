@@ -110,6 +110,26 @@ All validation procedures were executed directly against real data; **zero metri
 * **Fix Applied:** Aligned unit test assertions with the verified mathematical median (8.35%) and added extensive commentary detailing why mean and median diverge during economic crises.
 * **Status:** ✅ **Fixed & Verified**.
 
+### Bug 3: Plotly OLS Trendline Missing Statsmodels Dependency
+* **Description:** In `dashboard/app.py` Tab 5, `px.scatter(..., trendline="ols")` threw `ModuleNotFoundError: No module named 'statsmodels'` because Plotly relies on statsmodels for ordinary least squares regression fitting.
+* **Fix Applied:** Installed `statsmodels>=0.15.0` and permanently pinned `statsmodels>=0.14.0` in `requirements.txt`.
+* **Status:** ✅ **Fixed & Verified**.
+
+### Bug 4: PyArrow ArrowInvalid Type Conflict in Summary Statistics
+* **Description:** Streamlit's PyArrow serialization engine raised `PyArrow ArrowInvalid: Could not convert '11.79' with type str, tried to convert to int64, for column 'Unemployment Rate'`. The summary stats table passed an integer for observation count (`len(filtered_df) = 740`) while passing strings for formatted percentages (`'11.79%'`), causing PyArrow to infer int64 and subsequently fail on string elements.
+* **Fix Applied:** Standardized all column elements to string representations (`f"{len(filtered_df):,d}"`), and updated `st.dataframe` to use the current `width="stretch"` parameter.
+* **Status:** ✅ **Fixed & Verified**.
+
+### Bug 5: Streamlit CLI PowerShell Execution & Direct Python Invocation
+* **Description:** Calling bare `streamlit run` in Windows PowerShell can fail if `streamlit.exe` is located in the user's Python Scripts directory and not registered in the system `$env:PATH`. Additionally, running `python dashboard/app.py` directly caused context warnings.
+* **Fix Applied:** Embedded an auto-delegation wrapper in `if __name__ == "__main__":` that automatically invokes `python -m streamlit run` when executed directly via Python. Standardized all execution documentation to use `python -m streamlit run` for bulletproof cross-platform execution.
+* **Status:** ✅ **Fixed & Verified**.
+
+### Bug 6: Unit Test Path Discovery Mismatch
+* **Description:** Running `python -m unittest DataScience-Task2-UnemploymentAnalysis/tests/test_pipeline.py` from inside `DataScience-Task2-UnemploymentAnalysis/` failed with `ImportError: Start directory does not exist` due to redundant relative directory prefixing.
+* **Fix Applied:** Added `tests/__init__.py` for native unittest discovery and provided clear dual-directory instructions (`python -m unittest tests/test_pipeline.py` from task root; root-relative from workspace).
+* **Status:** ✅ **Fixed & Verified**.
+
 ---
 
 ## 6. 💡 Non-Interference Guarantee with Task 1
