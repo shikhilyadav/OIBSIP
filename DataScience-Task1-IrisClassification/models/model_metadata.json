@@ -1,0 +1,61 @@
+{
+    "best_model": "Random Forest Classifier",
+    "feature_names": [
+        "sepal_length",
+        "sepal_width",
+        "petal_length",
+        "petal_width"
+    ],
+    "target_names": [
+        "Setosa",
+        "Versicolor",
+        "Virginica"
+    ],
+    "test_metrics": {
+        "Model": "Random Forest Classifier",
+        "Train Accuracy": 1.0,
+        "Test Accuracy": 0.9667,
+        "Precision (Macro)": 0.9697,
+        "Recall (Macro)": 0.9667,
+        "F1-Score (Macro)": 0.9666,
+        "Precision (Weighted)": 0.9697,
+        "Recall (Weighted)": 0.9667,
+        "F1-Score (Weighted)": 0.9666
+    },
+    "comparison_table": [
+        {
+            "Model": "Logistic Regression",
+            "Train Accuracy": 0.9583,
+            "Test Accuracy": 0.9333,
+            "Precision (Macro)": 0.9333,
+            "Recall (Macro)": 0.9333,
+            "F1-Score (Macro)": 0.9333,
+            "Precision (Weighted)": 0.9333,
+            "Recall (Weighted)": 0.9333,
+            "F1-Score (Weighted)": 0.9333
+        },
+        {
+            "Model": "K-Nearest Neighbours",
+            "Train Accuracy": 0.975,
+            "Test Accuracy": 0.9333,
+            "Precision (Macro)": 0.9444,
+            "Recall (Macro)": 0.9333,
+            "F1-Score (Macro)": 0.9327,
+            "Precision (Weighted)": 0.9444,
+            "Recall (Weighted)": 0.9333,
+            "F1-Score (Weighted)": 0.9327
+        },
+        {
+            "Model": "Random Forest Classifier",
+            "Train Accuracy": 1.0,
+            "Test Accuracy": 0.9667,
+            "Precision (Macro)": 0.9697,
+            "Recall (Macro)": 0.9667,
+            "F1-Score (Macro)": 0.9666,
+            "Precision (Weighted)": 0.9697,
+            "Recall (Weighted)": 0.9667,
+            "F1-Score (Weighted)": 0.9666
+        }
+    ],
+    "trained_timestamp": "2026-11-22T18:36:15.257983"
+}

@@ -1,0 +1,119 @@
+{
+    "timestamp": "2026-11-22T18:36:04",
+    "tests": {
+        "REQ-1": {
+            "name": "Verify Python files for syntax errors",
+            "status": "PASSED",
+            "details": "All 6 Python source files compiled with 0 syntax errors."
+        },
+        "REQ-2": {
+            "name": "Execute data_loader.py & verify dataset loading",
+            "status": "PASSED",
+            "details": "Successfully loaded dataset via data_loader.py. CSV exported (4320 bytes)."
+        },
+        "REQ-3": {
+            "name": "Verify all 150 Iris records and three species",
+            "status": "PASSED",
+            "details": "Verified 150 records: Setosa (50), Versicolor (50), Virginica (50)."
+        },
+        "REQ-4": {
+            "name": "Check missing values, duplicates and data types",
+            "status": "PASSED",
+            "details": "0 missing values; 1 valid natural duplicate pair (index 101/142); dtypes valid: features=float64, species_id=int64, species=object."
+        },
+        "REQ-5": {
+            "name": "Execute EDA and verify all visualization files",
+            "status": "PASSED",
+            "details": "All 8 visualization plots generated and verified as valid non-empty PNG images."
+        },
+        "REQ-6": {
+            "name": "Execute model training",
+            "status": "PASSED",
+            "details": "Model training pipeline completed. Comparison table generated with 3 models."
+        },
+        "REQ-7": {
+            "name": "Verify stratified 80:20 train/test split",
+            "status": "PASSED",
+            "details": "Train size = 120 (80%), Test size = 30 (20%). Stratification confirmed: exactly 10 test samples per class."
+        },
+        "REQ-8": {
+            "name": "Confirm Logistic Regression, KNN and Random Forest are trained",
+            "status": "PASSED",
+            "details": "All 3 requested models trained: ['Logistic Regression', 'K-Nearest Neighbours', 'Random Forest Classifier']"
+        },
+        "REQ-9": {
+            "name": "Verify accuracy, precision, recall and F1-score",
+            "status": "PASSED",
+            "details": "Metrics verified. RF: Acc=0.9667, F1=0.9666; LR: Acc=0.9333, F1=0.9333; KNN: Acc=0.9333, F1=0.9327"
+        },
+        "REQ-10": {
+            "name": "Verify confusion matrices and classification reports",
+            "status": "PASSED",
+            "details": "Confusion matrices plot (171514 B) and comparison plot (166548 B) verified."
+        },
+        "REQ-11": {
+            "name": "Check best model selected using actual test results",
+            "status": "PASSED",
+            "details": "Best model 'Random Forest Classifier' strictly matches top evaluation metric rank."
+        },
+        "REQ-12": {
+            "name": "Verify joblib model serialization and loading",
+            "status": "PASSED",
+            "details": "Joblib artifact loaded successfully (150758 B). Keys verified: ['pipeline', 'model_name', 'feature_names', 'target_names', 'metrics']. Pipeline predict & predict_proba confirmed."
+        },
+        "REQ-13": {
+            "name": "Test predictions using sample flower measurements",
+            "status": "PASSED",
+            "details": "All 3 botanical test cases passed with valid probability distribution. Input validation verified (negative value rejected). Logs: Setosa: pred=Setosa, conf=100.0%, prob_sum=1.0000; Versicolor: pred=Versicolor, conf=97.8%, prob_sum=0.9999; Virginica: pred=Virginica, conf=99.4%, prob_sum=1.0000"
+        },
+        "REQ-14": {
+            "name": "Launch Streamlit application and check for runtime errors",
+            "status": "PASSED",
+            "details": "Streamlit server started on port 8502, health check endpoint returned HTTP 200 OK with 0 runtime crashes."
+        },
+        "REQ-15": {
+            "name": "Verify requirements.txt and README.md",
+            "status": "PASSED",
+            "details": "requirements.txt contains all 7 critical packages. README.md (12918 bytes) contains all required architectural and evaluation sections."
+        }
+    },
+    "metrics": [
+        {
+            "Model": "Logistic Regression",
+            "Train Accuracy": 0.9583,
+            "Test Accuracy": 0.9333,
+            "Precision (Macro)": 0.9333,
+            "Recall (Macro)": 0.9333,
+            "F1-Score (Macro)": 0.9333,
+            "Precision (Weighted)": 0.9333,
+            "Recall (Weighted)": 0.9333,
+            "F1-Score (Weighted)": 0.9333
+        },
+        {
+            "Model": "K-Nearest Neighbours",
+            "Train Accuracy": 0.975,
+            "Test Accuracy": 0.9333,
+            "Precision (Macro)": 0.9444,
+            "Recall (Macro)": 0.9333,
+            "F1-Score (Macro)": 0.9327,
+            "Precision (Weighted)": 0.9444,
+            "Recall (Weighted)": 0.9333,
+            "F1-Score (Weighted)": 0.9327
+        },
+        {
+            "Model": "Random Forest Classifier",
+            "Train Accuracy": 1.0,
+            "Test Accuracy": 0.9667,
+            "Precision (Macro)": 0.9697,
+            "Recall (Macro)": 0.9667,
+            "F1-Score (Macro)": 0.9666,
+            "Precision (Weighted)": 0.9697,
+            "Recall (Weighted)": 0.9667,
+            "F1-Score (Weighted)": 0.9666
+        }
+    ],
+    "passed": 15,
+    "failed": 0,
+    "bugs": [],
+    "notes": []
+}
