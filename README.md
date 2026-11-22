@@ -26,7 +26,7 @@ This repository contains professional, industry-standard data science and machin
 * **Primary Source:** Centre for Monitoring Indian Economy (CMIE) Consumer Pyramids Household Survey (May 2019 to June 2020).
 * **Coverage:** 28 Indian States & Union Territories across Rural and Urban sectors (740 cleaned observations).
 * **COVID-19 Shock:** National mean unemployment rose from **9.51% (Pre-COVID)** to **17.77% (Post-March 2020)**, an **86.91% relative surge**, peaking above **24%** in April–May 2020.
-* **Sectoral Divergence:** Urban unemployment reached **19.46%** post-lockdown due to commercial service closures, while rural unemployment was partially buffered at **16.08%** by agriculture and MGNREGA.
-* **Extreme Regions:** Highest average unemployment recorded in **Tripura (28.35%)** and **Haryana (26.28%)**; lowest in **Meghalaya (4.80%)** and **Odisha (5.66%)**.
+* **Sectoral Divergence:** Urban unemployment rose from **10.84%** to **19.28%** post-lockdown, while rural unemployment rose from **8.09%** to **16.18%** (+99.90% relative increase). Contextual literature notes that agricultural harvesting and MGNREGA public works helped buffer initial rural disruption.
+* **Extreme Regions:** Highest average unemployment recorded in **Tripura (28.35%)**, **Haryana (26.28%)**, and **Jharkhand (20.58%)**; lowest in **Meghalaya (4.80%)**, **Odisha (5.66%)**, and **Assam (6.43%)**.
 * **Interactive Dashboard:** Modern Streamlit Analytics Portal in `DataScience-Task2-UnemploymentAnalysis/dashboard/app.py`.
 * **Full Documentation:** Refer to [`DataScience-Task2-UnemploymentAnalysis/README.md`](./DataScience-Task2-UnemploymentAnalysis/README.md).
