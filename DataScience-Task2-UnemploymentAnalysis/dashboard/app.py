@@ -579,26 +579,4 @@ def main():
 
 
 if __name__ == "__main__":
-    try:
-        from streamlit.runtime.scriptrunner import get_script_run_context
-        is_streamlit = get_script_run_context() is not None
-    except Exception:
-        is_streamlit = False
-
-    if is_streamlit:
-        main()
-    else:
-        # Gracefully handle when user accidentally runs bare `python app.py`
-        import subprocess
-        print("=" * 75)
-        print("[NOTICE] Detected execution via bare 'python'.")
-        print("Streamlit applications must be run using the Streamlit Web CLI.")
-        print(f"Launching automatically via: python -m streamlit run \"{os.path.abspath(__file__)}\"")
-        print("=" * 75)
-        cmd = [sys.executable, "-m", "streamlit", "run", os.path.abspath(__file__)]
-        if len(sys.argv) > 1:
-            cmd.extend(sys.argv[1:])
-        try:
-            subprocess.run(cmd)
-        except KeyboardInterrupt:
-            print("\n[INFO] Dashboard stopped by user.")
+    main()
