@@ -147,7 +147,7 @@ def main():
     df_full = load_data()
 
     # Header
-    st.markdown('<div class="main-title">🇮🇳 Indian Unemployment Analytics Dashboard</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-title">Indian Unemployment Analytics Dashboard</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-title">OASIS INFOBYTE Data Science Internship | Task 2: Historical CMIE Macroeconomic Analysis (2019-2020)</div>', unsafe_allow_html=True)
 
     # ---------------------------------------------------------

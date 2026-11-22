@@ -126,6 +126,8 @@ The raw dataset contains 768 rows. Data cleaning identified that rows 740 to 767
 | **Employed Headcount** | 5,314,721 | 5,839,769 | 2,746,640 | 1,190,424 | 7,456,645 | 49,420 | 45,777,509 | +2.57 |
 | **Labour Participation Rate (%)** | **42.63** | 8.11 | **41.16** | 37.14 | 45.60 | 13.33 | 72.57 | +0.33 |
 
+> *Note on Standard Deviation:* All standard deviation figures represent sample standard deviations with Bessel's correction ($s = 10.7213\%$, $\text{ddof}=1$), which is statistically appropriate for empirical survey sample data. Population standard deviation ($\text{ddof}=0$) equals $10.7141\%$.
+
 ### 2. State & Regional Rankings
 * **Highest Average Unemployment:** **Tripura (28.35%)**, **Haryana (26.28%)**, **Jharkhand (20.27%)**, **Bihar (18.97%)**, **Delhi (16.50%)**.
 * **Lowest Average Unemployment:** **Meghalaya (4.80%)**, **Odisha (5.66%)**, **Assam (6.43%)**, **Gujarat (6.66%)**, **Uttarakhand (6.81%)**.

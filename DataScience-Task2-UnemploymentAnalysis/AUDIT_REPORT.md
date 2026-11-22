@@ -42,6 +42,10 @@ All validation procedures were executed directly against real data; **zero metri
 * **Overall Average Unemployment Rate:** **11.79%**
 * **Median Unemployment Rate:** **8.35%**
 * **Standard Deviation:** **10.72%** (sample standard deviation $s = 10.7213\%$, $\text{ddof}=1$)
+> **Statistical Note (Sample vs. Population Standard Deviation):**
+> * **Sample Std Dev ($s$, $\text{ddof}=1$):** `10.721298%` $\rightarrow$ **`10.72%`** (used across `pandas.Series.std()` and `.describe()`).
+> * **Population Std Dev ($\sigma$, $\text{ddof}=0$):** `10.714052%` $\rightarrow$ **`10.71%`** (`numpy.std()` default).
+> * **Conclusion:** As this dataset is a 14-month empirical survey sample, sample standard deviation ($N-1=739$) is the statistically appropriate estimator. The figure **10.72%** is mathematically verified, dynamic, and consistent throughout the project.
 * **Skewness:** **+1.89** (strongly right-skewed due to lockdown outliers)
 * **Average Labour Participation Rate:** **42.63%**
 * **Average Employed Workforce:** **5,314,721** persons per observation unit
