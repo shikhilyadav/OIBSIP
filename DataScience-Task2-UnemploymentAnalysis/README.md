@@ -5,7 +5,8 @@
 ![Pandas](https://img.shields.io/badge/Pandas-2.0%2B-150458?style=for-the-badge&logo=pandas)
 ![Plotly](https://img.shields.io/badge/Plotly-5.15%2B-3F4F75?style=for-the-badge&logo=plotly)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.28%2B-FF4B4B?style=for-the-badge&logo=streamlit)
-![License](https://img.shields.io/badge/Data_License-CC_BY--SA_4.0-success?style=for-the-badge)
+![Data Source](https://img.shields.io/badge/Data_Source-CMIE_CPHS-blue?style=for-the-badge)
+![Usage](https://img.shields.io/badge/Usage-Educational_%26_Research-success?style=for-the-badge)
 
 ---
 
@@ -81,11 +82,11 @@ DataScience-Task2-UnemploymentAnalysis/
 ---
 
 ## 🌐 Dataset Provenance & Data Dictionary
-* **Primary Source:** Centre for Monitoring Indian Economy (CMIE) — Consumer Pyramids Household Survey.
-* **Provider:** Kaggle Public Datasets / Open Data.
-* **Terms of Use:** Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0).
-* **Direct Mirror URL:** `https://raw.githubusercontent.com/yuvrajsaraogi/Unemployment-Analysis-with-Python/main/Unemployment%20in%20India.csv`
-* **Coverage:** 28 Indian States & UTs; Rural and Urban sectors; Monthly frequency (May 31, 2019 to June 30, 2020).
+* **Primary Origin:** Centre for Monitoring Indian Economy (CMIE) — Consumer Pyramids Household Survey (CPHS).
+* **Provider / Distribution Mirror:** Kaggle Open Data community archive (`Unemployment in India`).
+* **Usage & Licensing Terms:** Sourced from public open datasets for educational, analytical, and research applications. Users analyzing this data must attribute CMIE as the originating survey authority. Proprietary commercial CMIE microdata remains governed by CMIE service terms.
+* **Direct Archive Mirror URL:** `https://raw.githubusercontent.com/yuvrajsaraogi/Unemployment-Analysis-with-Python/main/Unemployment%20in%20India.csv`
+* **Coverage:** 28 Indian States & UTs; Rural and Urban sectors; Monthly frequency (May 31, 2019 to June 30, 2020 — exactly 14 calendar months).
 
 ### Data Dictionary
 | Variable Name | Raw Header | Data Type | Description |
@@ -113,7 +114,7 @@ The raw dataset contains 768 rows. Data cleaning identified that rows 740 to 767
 | **Missing Values** | 196 (in empty rows) | **0** | Clean, non-null observations across all records |
 | **Duplicate Records** | 27 (in empty rows) | **0** | Verified zero duplicated observation tuples |
 | **Date Format** | String (` 31-05-2019`) | `datetime64[ns]` | Standardized to ISO `%Y-%m-%d` format |
-| **Outliers (IQR > 32.73%)** | 35 | 35 | Verified as authentic lockdown shocks (e.g., Puducherry 75.8%) |
+| **Outliers (IQR > 32.73%)** | 35 | 35 | Verified as authentic lockdown shocks (e.g., Puducherry 76.74%) |
 
 ---
 
@@ -122,38 +123,43 @@ The raw dataset contains 768 rows. Data cleaning identified that rows 740 to 767
 ### 1. Descriptive Summary Statistics
 | Indicator | Mean | Std Dev | Median | Q1 (25%) | Q3 (75%) | Min | Max | Skewness |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Unemployment Rate (%)** | **11.79** | 10.72 | **8.35** | 4.60 | 15.86 | 0.00 | **75.85** | **+1.89** |
+| **Unemployment Rate (%)** | **11.79** | 10.72 | **8.35** | 4.66 | 15.89 | 0.00 | **76.74** | **+2.22** |
 | **Employed Headcount** | 5,314,721 | 5,839,769 | 2,746,640 | 1,190,424 | 7,456,645 | 49,420 | 45,777,509 | +2.57 |
 | **Labour Participation Rate (%)** | **42.63** | 8.11 | **41.16** | 37.14 | 45.60 | 13.33 | 72.57 | +0.33 |
 
-> *Note on Standard Deviation:* All standard deviation figures represent sample standard deviations with Bessel's correction ($s = 10.7213\%$, $\text{ddof}=1$), which is statistically appropriate for empirical survey sample data. Population standard deviation ($\text{ddof}=0$) equals $10.7141\%$.
+> *Note on Standard Deviation Calculation:* All standard deviation figures represent sample standard deviations with Bessel's correction ($s = 10.7213\%$, $\text{ddof}=1$), which is statistically appropriate for empirical survey sample data. Population standard deviation with $\text{ddof}=0$ equals $10.7141\%$.
 
 ### 2. State & Regional Rankings
-* **Highest Average Unemployment:** **Tripura (28.35%)**, **Haryana (26.28%)**, **Jharkhand (20.27%)**, **Bihar (18.97%)**, **Delhi (16.50%)**.
-* **Lowest Average Unemployment:** **Meghalaya (4.80%)**, **Odisha (5.66%)**, **Assam (6.43%)**, **Gujarat (6.66%)**, **Uttarakhand (6.81%)**.
+* **Highest Average Unemployment:** **Tripura (28.35%)**, **Haryana (26.28%)**, **Jharkhand (20.58%)**, **Bihar (18.92%)**, **Himachal Pradesh (18.54%)**, **Delhi (16.50%)**.
+* **Lowest Average Unemployment:** **Meghalaya (4.80%)**, **Odisha (5.66%)**, **Assam (6.43%)**, **Uttarakhand (6.58%)**, **Gujarat (6.66%)**.
 * **Macro Zone Divergence:** Northern and Eastern zones experienced elevated volatility ($>14\%$) relative to Western and Southern zones.
 
 ### 3. Correlation Dynamics
-* **Unemployment Rate vs. Labour Participation ($r = 0.003$):** Weak correlation. During severe lockdown months, discouraged workers ceased job seeking, which compressed the labor participation rate while unemployment spiked.
-* **Unemployment Rate vs. Employed Count ($r = -0.223$):** Negative correlation reflecting workforce shrinkage during industrial suspensions.
+* **Unemployment Rate vs. Labour Participation ($r \approx 0.003$):** Weak empirical correlation. During severe lockdown months, discouraged workers ceased active job seeking, which compressed the labor participation rate while unemployment spiked.
+* **Unemployment Rate vs. Employed Count ($r \approx -0.223$):** Negative correlation reflecting workforce shrinkage during industrial suspensions.
 * *Methodological Note:* Correlation does **not** equal causation.
 
 ---
 
 ## 🦠 COVID-19 Lockdown Shock Analysis
-* **Pre-COVID Baseline (May 2019 – Feb 2020):** **9.51%** mean unemployment rate.
-* **COVID/Post-COVID Period (Mar 2020 – Jun 2020):** **17.77%** mean unemployment rate.
+* **Pre-COVID Baseline (May 2019 – Feb 2020, 536 records):** **9.51%** mean unemployment rate.
+* **COVID/Post-COVID Period (Mar 2020 – Jun 2020, 204 records):** **17.77%** mean unemployment rate.
 * **Absolute Shock:** **+8.26 percentage points**.
 * **Relative Surge:** **+86.91% increase** nationwide.
 
 ### Sectoral Vulnerability: Urban vs. Rural
 | Sector | Pre-COVID Mean (%) | Post-COVID Mean (%) | Absolute Surge (% pts) | Relative Increase (%) |
 | :--- | :---: | :---: | :---: | :---: |
-| **Urban** | 10.91 | **19.46** | **+8.55** | **+78.37%** |
-| **Rural** | 8.03 | **16.08** | **+8.05** | **+100.25%** |
+| **Urban** | 10.84 | **19.28** | **+8.43** | **+77.79%** |
+| **Rural** | 8.09 | **16.18** | **+8.09** | **+99.90%** |
 
-* **Urban Fragility:** Urban sectors suffered immediate dislocation due to strict enforcement of commercial closures, manufacturing freezes, and high density of informal service labor.
-* **Rural Dynamics:** Rural sectors experienced an initial buffer from ongoing agricultural Rabi harvesting and MGNREGA social safety nets, but were subsequently strained by massive reverse migration flows from metropolitan centers.
+### Empirical Observations vs. Economic Hypotheses
+* **Directly Observed Empirical Findings:** Urban sectors experienced higher nominal baseline unemployment and reached higher peak levels (19.28%) due to contact-intensive commercial closures. Conversely, rural sectors experienced a sharper relative percentage surge (+99.90% vs. +77.79% urban) from their lower pre-crisis baseline.
+* **Contextual Economic Hypotheses (Non-Causal External Context):**
+  - *Rabi Harvest Buffer:* Macroeconomic reports (e.g., *Reserve Bank of India Monetary Policy Report 2020*) note that agricultural exemptions during the April 2020 Rabi crop harvest provided an initial absorptive cushion for rural labor.
+  - *MGNREGA Countercyclical Support:* Public works enrollment under MGNREGA has been cited in literature as an emergency income stabilizer for distressed rural households.
+  - *Reverse Migration Burden:* Economic surveys (e.g., *Economic Survey of India 2020-21*) highlight significant reverse migration of informal workers from metropolitan centers back to rural origin states (such as Bihar, Jharkhand, and Uttar Pradesh), which placed delayed labor absorption strain on village economies in May–June 2020.
+  - *Survey Boundary Note:* The CMIE dataset measures self-reported labor force participation and does not track migration streams or fiscal disbursements directly.
 
 ---
 

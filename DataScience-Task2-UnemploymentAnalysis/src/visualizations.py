@@ -18,6 +18,7 @@ Generates 8 high-resolution PNG charts saved to `visualizations/`:
 import os
 import sys
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import seaborn as sns
 import pandas as pd
 import numpy as np
@@ -157,6 +158,8 @@ def generate_all_visualizations(df: pd.DataFrame, output_dir: str):
     ax.set_title("Timeline of Monthly Unemployment Rate in India (May 2019 - June 2020)", fontweight="bold", pad=12)
     ax.set_xlabel("Observation Month", fontweight="bold")
     ax.set_ylabel("Unemployment Rate (%)", fontweight="bold")
+    ax.set_xlim(pd.Timestamp("2019-05-15"), pd.Timestamp("2020-06-30"))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y"))
     ax.legend(loc="upper left", frameon=True)
 
     p3 = os.path.join(output_dir, "monthly_trend.png")
@@ -192,6 +195,8 @@ def generate_all_visualizations(df: pd.DataFrame, output_dir: str):
     ax.set_title("Comparative Unemployment Trajectory Across Major Indian Economies", fontweight="bold", pad=12)
     ax.set_xlabel("Date", fontweight="bold")
     ax.set_ylabel("Estimated Unemployment Rate (%)", fontweight="bold")
+    ax.set_xlim(pd.Timestamp("2019-05-15"), pd.Timestamp("2020-06-30"))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y"))
     ax.legend(title="State", loc="upper left", frameon=True)
 
     p4 = os.path.join(output_dir, "state_comparison.png")

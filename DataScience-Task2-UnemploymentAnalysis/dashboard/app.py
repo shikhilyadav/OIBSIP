@@ -341,7 +341,7 @@ def main():
             st.info("""
             **Observation:** The unemployment distribution exhibits pronounced right-skewness.
             While standard non-crisis unemployment rates clustered around 8%–11%, extreme outliers
-            emerged during April–May 2020 reaching up to 75.8% due to nationwide lockdowns.
+            emerged during April–May 2020 reaching up to 76.74% (Puducherry, April 2020) due to nationwide lockdowns.
             """)
 
     # ---------------------------------------------------------
@@ -418,6 +418,11 @@ def main():
             annotation_text="Nationwide Lockdown (Mar 24, 2020)"
         )
         fig_time.update_layout(template="plotly_white", height=450)
+        if not monthly_df.empty:
+            fig_time.update_xaxes(
+                range=[monthly_df["Date"].min() - pd.Timedelta(days=5), monthly_df["Date"].max() + pd.Timedelta(days=1)],
+                tickformat="%b %Y"
+            )
         st.plotly_chart(fig_time, width="stretch")
 
         # Multi-state comparative time series
@@ -439,6 +444,11 @@ def main():
                 labels={"Estimated_Unemployment_Rate": "Unemployment Rate (%)"}
             )
             fig_comp.update_layout(template="plotly_white", height=450)
+            if not comp_df.empty:
+                fig_comp.update_xaxes(
+                    range=[comp_df["Date"].min() - pd.Timedelta(days=5), comp_df["Date"].max() + pd.Timedelta(days=1)],
+                    tickformat="%b %Y"
+                )
             st.plotly_chart(fig_comp, width="stretch")
 
     # ---------------------------------------------------------
@@ -569,8 +579,9 @@ def main():
 
         st.info("""
         **Labour Participation Takeaways:**
-        - **Weak Correlation between Unemployment and LPR ($r \approx 0.003$):** High unemployment does not always correlate with high participation. In crisis months, discouraged workers leave the labour force altogether, causing LPR to compress alongside surging unemployment.
-        - **Negative Correlation between Unemployment and Employed ($r \approx -0.22$):** As expected, higher unemployment rates correspond to smaller employed headcounts across observation strata.
+        - **Weak Correlation between Unemployment and LPR (r ≈ 0.003):** High unemployment does not linearly depress labor participation across all cohorts. In severe crisis months, discouraged workers ceased active job search, causing LPR to compress alongside surging unemployment.
+        - **Negative Correlation between Unemployment and Employed (r ≈ -0.223):** Higher unemployment rates correspond with contractions in actively employed headcounts across observation strata.
+        - **Methodological Principle:** Correlation does not establish causation; these metrics describe empirical co-movement rather than deterministic cause-and-effect.
         """)
 
     # ---------------------------------------------------------
@@ -580,21 +591,28 @@ def main():
         st.subheader("Key Findings & Policy Insights")
 
         st.markdown("""
-        ### 🔍 Critical Macroeconomic Discoveries:
+        ### 🔍 Empirical Macroeconomic Findings (Directly Observed in CMIE Data):
         1. **The April-May 2020 Lockdown Shock:**
-           - National average unemployment rose from **9.51% (Pre-COVID)** to **17.77% (Post-March 2020)**, reaching peak shock levels exceeding **24%** in April and May 2020.
-           - This represents an **86.91% relative increase** across all sampled regions.
-        2. **Urban Fragility vs. Rural Buffers:**
-           - Urban sectors bore an immediate initial brunt due to non-essential commercial closures and high informality in contact-intensive service trades.
-           - Rural areas experienced delayed shock absorption as agriculture (Rabi harvest) and MGNREGA social safety nets mitigated initial disruption, though reverse migration later strained village economies.
-        3. **Pronounced Regional Disparities:**
-           - Small states and UTs with service-reliant economies (Puducherry, Goa, Delhi) and high outward-migrant origins (Bihar, Jharkhand) experienced severe volatility (>40% peak rates).
-           - Agrarian and northeastern states with high self-employment (Meghalaya, Assam, Odisha) maintained comparatively lower unemployment metrics.
+           - National average unemployment rose from **9.51% (Pre-COVID baseline)** to **17.77% (Post-March 2020)**, peaking above **24%** across April and May 2020.
+           - This reflects an absolute increase of **+8.26 percentage points** (**+86.91% relative increase**).
+        2. **Sectoral Divergence (Urban vs. Rural):**
+           - **Urban:** Pre-COVID average of **10.84%** surged to **19.28%** post-lockdown (+8.43 percentage points; +77.79% relative increase).
+           - **Rural:** Pre-COVID average of **8.09%** rose to **16.18%** post-lockdown (+8.09 percentage points; +99.90% relative increase).
+        3. **Pronounced State-Level Disparities:**
+           - Highest average unemployment across the full 14-month dataset: **Tripura (28.35%)**, **Haryana (26.28%)**, **Jharkhand (20.58%)**, **Bihar (18.92%)**, **Himachal Pradesh (18.54%)**, **Delhi (16.50%)**.
+           - Lowest average unemployment: **Meghalaya (4.80%)**, **Odisha (5.66%)**, **Assam (6.43%)**, **Uttarakhand (6.58%)**, **Gujarat (6.66%)**.
+           - Peak single-observation shock reached **76.74%** (Puducherry, Urban, April 2020).
+
+        ### 📚 External Context & Economic Hypotheses (Non-Causal Interpretations):
+        *Note: The following contextual factors are documented in macroeconomic literature as explanatory hypotheses rather than variables directly measured in this survey dataset:*
+        - *Agricultural Seasonal Buffer (Hypothesis):* Labor economists (e.g., RBI Bulletins, Ministry of Agriculture) suggest that active Rabi harvest operations during April 2020 provided temporary employment absorption for rural laborers, helping delay the initial surge.
+        - *Rural Safety Nets (Hypothesis):* Public works programs such as MGNREGA have been hypothesized to offer countercyclical wage buffers during crisis periods, though local disbursement was subject to administrative constraints.
+        - *Reverse Migration Stress (Hypothesis):* Qualitative and mobility reports (e.g., Economic Survey 2020-21) highlight significant metropolitan out-migration back to home states (e.g., Bihar, Jharkhand, Uttar Pradesh), which likely placed secondary strain on rural economies in May–June 2020.
 
         ### 💼 Policy & Strategic Recommendations:
-        - **Decentralized Employment Guarantees:** Expanding urban employment guarantee schemes modeled after rural MGNREGA can provide countercyclical income stabilization during urban shocks.
-        - **Informal Sector Social Security:** Formalizing portable social security benefits (e.g. One Nation One Ration Card) protects vulnerable migrant workers during sudden geographic dislocations.
-        - **Digital Labor Market Monitoring:** Real-time high-frequency labor surveys enable policymakers to deploy state-specific fiscal stimulus targeted at localized shock centers.
+        - **Decentralized Urban Employment Guarantees:** Expanding targeted urban work programs modeled after rural employment guarantees to mitigate urban service-sector freezes.
+        - **Portable Social Security:** Enhancing interstate portability of welfare benefits (e.g., One Nation One Ration Card) to protect mobile migrant laborers.
+        - **High-Frequency Labor Intelligence:** Strengthening real-time sub-state labor monitoring to deploy localized fiscal buffers during macroeconomic shocks.
         """)
 
 
