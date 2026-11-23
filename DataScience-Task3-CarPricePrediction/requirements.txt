@@ -1,0 +1,14 @@
+# DataScience-Task3-CarPricePrediction Dependencies
+# Environment used for training and serialization:
+# Python 3.14.6 / scikit-learn 1.9.1 / joblib 1.6.0
+# The serialized model pipeline (car_price_pipeline.joblib) was created using scikit-learn 1.9.1
+# and must be loaded using scikit-learn 1.9.1 to ensure exact numerical reproducibility
+# and prevent InconsistentVersionWarning or unpickling errors.
+pandas>=2.2.0
+numpy>=1.26.0
+scikit-learn==1.9.1
+joblib==1.6.0
+matplotlib>=3.8.0
+seaborn>=0.13.0
+streamlit>=1.30.0
+Pillow>=10.0.0

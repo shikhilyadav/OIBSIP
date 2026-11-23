@@ -1,0 +1,112 @@
+{
+  "best_model_name": "Linear Regression",
+  "random_state": 42,
+  "test_size": 0.2,
+  "cv_folds": 5,
+  "total_observations": 3577,
+  "train_observations": 2861,
+  "test_observations": 716,
+  "feature_columns": [
+    "brand",
+    "car_age",
+    "km_driven",
+    "fuel",
+    "seller_type",
+    "transmission",
+    "owner"
+  ],
+  "categorical_features": [
+    "brand",
+    "fuel",
+    "seller_type",
+    "transmission",
+    "owner"
+  ],
+  "numerical_features": [
+    "car_age",
+    "km_driven"
+  ],
+  "model_comparison": {
+    "Linear Regression": {
+      "cv_r2_mean": 0.6981,
+      "cv_r2_std": 0.072,
+      "cv_mae": 136928.51,
+      "cv_rmse": 269369.81,
+      "test_r2": 0.712,
+      "test_mae": 144221.02,
+      "test_rmse": 304581.55
+    },
+    "Ridge Regression": {
+      "cv_r2_mean": 0.6955,
+      "cv_r2_std": 0.0901,
+      "cv_mae": 138146.05,
+      "cv_rmse": 271406.44,
+      "test_r2": 0.6884,
+      "test_mae": 145432.24,
+      "test_rmse": 316840.94
+    },
+    "Random Forest": {
+      "cv_r2_mean": 0.6685,
+      "cv_r2_std": 0.1198,
+      "cv_mae": 140985.25,
+      "cv_rmse": 282629.68,
+      "test_r2": 0.6275,
+      "test_mae": 144999.64,
+      "test_rmse": 346417.04
+    },
+    "Gradient Boosting": {
+      "cv_r2_mean": 0.6822,
+      "cv_r2_std": 0.0996,
+      "cv_mae": 136753.1,
+      "cv_rmse": 276497.09,
+      "test_r2": 0.5437,
+      "test_mae": 148130.59,
+      "test_rmse": 383371.75
+    }
+  },
+  "feature_importances_or_coefs": {
+    "car_age": -0.47533869390733446,
+    "km_driven": -0.035542460327702835,
+    "brand_Ambassador": -0.825628013331146,
+    "brand_Audi": 0.7684170620306789,
+    "brand_BMW": 0.6940594754877318,
+    "brand_Chevrolet": -0.6695494242492308,
+    "brand_Daewoo": -0.6166835220232884,
+    "brand_Datsun": -0.7197305010439037,
+    "brand_Fiat": -0.7041384458867931,
+    "brand_Force": -0.6449684383113181,
+    "brand_Ford": -0.3497023417343265,
+    "brand_Honda": -0.12426892480937717,
+    "brand_Hyundai": -0.32163104794446545,
+    "brand_Jaguar": 1.1551569937318973,
+    "brand_Jeep": 0.5221389293704958,
+    "brand_Land Rover": 1.320479130503474,
+    "brand_MG": 0.3946410084712441,
+    "brand_Mahindra": -0.16842264554535477,
+    "brand_Maruti": -0.4448250121732675,
+    "brand_Mercedes-Benz": 0.8382580470904089,
+    "brand_Mitsubishi": 0.7992192395221448,
+    "brand_Nissan": -0.3603214473511295,
+    "brand_Opel": 0.1945946354315211,
+    "brand_Renault": -0.49770372029218807,
+    "brand_Skoda": -0.21082939506253445,
+    "brand_Tata": -0.811471533990831,
+    "brand_Toyota": 0.2713232025678073,
+    "brand_Volkswagen": -0.28749823655693907,
+    "brand_Volvo": 0.7990849260986493,
+    "fuel_CNG": -0.13599071774944826,
+    "fuel_Diesel": 0.3707308166651079,
+    "fuel_LPG": -0.18291032535172932,
+    "fuel_Petrol": -0.051829773563813714,
+    "seller_type_Dealer": -0.029584618070657404,
+    "seller_type_Individual": -0.11306443228157106,
+    "seller_type_Trustmark Dealer": 0.14264905035223385,
+    "transmission_Automatic": 0.18283675479614944,
+    "transmission_Manual": -0.18283675479615605,
+    "owner_First Owner": 0.028729989924306795,
+    "owner_Fourth & Above Owner": -0.12893618298462295,
+    "owner_Second Owner": -0.015706290200789504,
+    "owner_Test Drive Car": 0.22752600831804637,
+    "owner_Third Owner": -0.11161352505683066
+  }
+}
