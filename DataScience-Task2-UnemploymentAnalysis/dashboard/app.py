@@ -164,12 +164,8 @@ def main():
     zone_options = ["All Zones"] + sorted(df_full["Zone"].unique().tolist())
     selected_zone = st.sidebar.selectbox("Macro-Geographical Zone:", zone_options, index=0)
 
-    # 3. State Multiselect
-    available_states = df_full["State"].unique()
-    if selected_zone != "All Zones":
-        available_states = df_full[df_full["Zone"] == selected_zone]["State"].unique()
-
-    all_states_sorted = sorted(available_states.tolist())
+    # 3. State Multiselect (Independent of Macro-Geographical Zone)
+    all_states_sorted = sorted(df_full["State"].unique().tolist())
     selected_states = st.sidebar.multiselect(
         "Select Specific States (Defaults to All):",
         all_states_sorted,
