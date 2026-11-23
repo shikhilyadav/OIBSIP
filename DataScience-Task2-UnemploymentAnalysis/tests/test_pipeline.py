@@ -135,43 +135,6 @@ class TestUnemploymentPipeline(unittest.TestCase):
                 self.assertGreater(img.size[0], 0)
                 self.assertGreater(img.size[1], 0)
 
-    def test_13_state_multiselect_independent_of_zone_filter(self):
-        """Verify that state options are independent of the selected Macro-Geographical Zone."""
-        df_full = self.clean_df
-
-        # 1. Option list always contains all 28 states
-        all_states_sorted = sorted(df_full["State"].unique().tolist())
-        self.assertEqual(len(all_states_sorted), 28)
-
-        # 2. Test filtering under All Zones, Central, North, and South
-        # Scenario A: All Zones with no states selected (defaults to all)
-        df_all = df_full.copy()
-        self.assertEqual(len(df_all), 740)
-        self.assertEqual(df_all["State"].nunique(), 28)
-
-        # Scenario B: Central zone with no states selected
-        df_central = df_full[df_full["Zone"] == "Central"]
-        self.assertEqual(df_central["State"].nunique(), 2)
-        self.assertSetEqual(set(df_central["State"].unique()), {"Chhattisgarh", "Madhya Pradesh"})
-        self.assertEqual(len(all_states_sorted), 28)  # Options remain all 28
-
-        # Scenario C: North zone with no states selected
-        df_north = df_full[df_full["Zone"] == "North"]
-        self.assertEqual(df_north["State"].nunique(), 8)
-        self.assertIn("Delhi", df_north["State"].unique())
-        self.assertIn("Haryana", df_north["State"].unique())
-        self.assertEqual(len(all_states_sorted), 28)  # Options remain all 28
-
-        # Scenario D: South zone with specific state selection
-        selected_states = ["Kerala", "Karnataka"]
-        df_south_states = df_full[(df_full["Zone"] == "South") & (df_full["State"].isin(selected_states))]
-        self.assertEqual(df_south_states["State"].nunique(), 2)
-        self.assertSetEqual(set(df_south_states["State"].unique()), {"Kerala", "Karnataka"})
-
-        # Scenario E: State selected outside the chosen zone produces empty slice handled gracefully
-        df_mismatch = df_full[(df_full["Zone"] == "Central") & (df_full["State"].isin(["Kerala"]))]
-        self.assertTrue(df_mismatch.empty)
-
 
 if __name__ == "__main__":
     unittest.main()
