@@ -1,23 +1,21 @@
 """
 app.py
 ======
-Interactive Streamlit Analytics Dashboard for Oasis Infobyte Task 2:
-Unemployment Analysis with Python (India).
+EmployIQ — Labour Market Intelligence Platform
+OASIS INFOBYTE Data Science Internship | Task 2: Unemployment Analysis in India.
 
 Features:
-- Professional White & Emerald Green UI/UX theme.
-- Dynamic KPI metrics calculated from active filters.
-- Interactive Plotly Express & Graph Objects visualizations (including OLS trendlines).
-- Comprehensive filtering by State, Date Range, Sector (Rural/Urban), and COVID Phase.
-- Robust data type casting and safe handling for PyArrow serialization.
-- Automatic fallback runner when launched via bare `python app.py`.
-- 6 Modular Sections:
-  1. Overview & High-Level KPIs
-  2. Regional & State-wise Analysis
-  3. Monthly Trends & Temporal Dynamics
-  4. COVID-19 Pandemic Shock Analysis
-  5. Employment & Labour Participation Dynamics
-  6. Strategic Economic Insights & Policy Recommendations
+- Dark Executive Economic Intelligence UI/UX with Deep Navy (#070C18), Deep Teal (#00A896), and Cyan (#02C39A) accents.
+- Preserves all authentic CMIE data structures, PyArrow safety, and non-causal economic rigor.
+- STRICT PRESERVATION OF INDEPENDENT STATE SELECTION:
+  State multiselect remains completely independent of the Macro-Geographical Zone filter.
+- 6 Comprehensive Views:
+  1. Executive Overview & Macro KPIs
+  2. State-Level Labour Economics
+  3. Regional & Zonal Comparative Dynamics
+  4. COVID-19 Lockdown Shock Analysis
+  5. Labour Participation & Sectoral Divergence
+  6. Empirical Policy Recommendations
 """
 
 import os
@@ -28,77 +26,84 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 
-# Configure Streamlit page layout and branding
+# Configure page layout and dark economic branding
 st.set_page_config(
-    page_title="Indian Unemployment Analytics Dashboard | Oasis Infobyte Task 2",
-    page_icon="📈",
+    page_title="EmployIQ | Labour Market Intelligence",
+    page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Emerald green styling tokens
-THEME_GREEN = "#059669"
-THEME_LIGHT_GREEN = "#ecfdf5"
-THEME_BORDER = "#e2e8f0"
-THEME_DARK = "#0f172a"
-THEME_RED = "#ef4444"
-THEME_BLUE = "#3b82f6"
+# Dark Economic UI Styling
+THEME_BG = "#070C18"
+THEME_CARD = "#0D1527"
+THEME_BORDER = "#1E293B"
+THEME_CYAN = "#00D9F5"
+THEME_TEAL = "#00F5A0"
+THEME_RED = "#FF3B5C"
+THEME_AMBER = "#FFB800"
 
-# Apply custom CSS styling for modern card layout
 st.markdown(f"""
 <style>
-    .main-title {{
+    /* Global Base */
+    .stApp {{
+        background-color: {THEME_BG};
+        color: #E2E8F0;
+        font-family: 'Inter', -apple-system, sans-serif;
+    }}
+    
+    /* Executive Headers */
+    .brand-title {{
         font-size: 2.2rem;
         font-weight: 800;
-        color: {THEME_DARK};
+        letter-spacing: -0.03em;
+        background: linear-gradient(135deg, #00F5A0 0%, #00D9F5 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
         margin-bottom: 0.1rem;
     }}
-    .sub-title {{
-        font-size: 1.05rem;
-        color: #64748b;
+    .brand-sub {{
+        font-size: 0.95rem;
+        color: #94A3B8;
         margin-bottom: 1.5rem;
     }}
+    
+    /* KPI Card */
     .kpi-card {{
-        background-color: white;
+        background-color: {THEME_CARD};
         border-radius: 12px;
-        padding: 18px 20px;
+        padding: 20px;
         border: 1px solid {THEME_BORDER};
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        border-top: 4px solid {THEME_GREEN};
-    }}
-    .kpi-value {{
-        font-size: 1.85rem;
-        font-weight: 800;
-        color: {THEME_DARK};
-        margin-top: 4px;
+        border-top: 3px solid #00F5A0;
+        box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.5);
     }}
     .kpi-label {{
-        font-size: 0.82rem;
+        font-size: 0.75rem;
         font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: #64748b;
+        letter-spacing: 0.08em;
+        color: #94A3B8;
     }}
-    .kpi-delta {{
-        font-size: 0.85rem;
-        font-weight: 600;
+    .kpi-value {{
+        font-size: 1.9rem;
+        font-weight: 800;
+        font-family: 'JetBrains Mono', monospace;
+        color: #FFFFFF;
         margin-top: 4px;
     }}
-    .delta-positive {{ color: {THEME_RED}; }}
-    .delta-negative {{ color: {THEME_GREEN}; }}
-    .stTabs [data-baseweb="tab-list"] {{
-        gap: 8px;
+    .kpi-subtext {{
+        font-size: 0.8rem;
+        color: #00D9F5;
+        margin-top: 4px;
     }}
-    .stTabs [data-baseweb="tab"] {{
-        height: 48px;
-        white-space: pre-wrap;
-        border-radius: 8px 8px 0px 0px;
-        padding: 10px 20px;
-        font-weight: 600;
-    }}
-    .stTabs [aria-selected="true"] {{
-        color: {THEME_GREEN} !important;
-        border-bottom-color: {THEME_GREEN} !important;
+    
+    /* Content Cards */
+    .econ-card {{
+        background-color: {THEME_CARD};
+        border: 1px solid {THEME_BORDER};
+        border-radius: 12px;
+        padding: 22px;
+        margin-bottom: 16px;
     }}
 </style>
 """, unsafe_allow_html=True)
@@ -108,14 +113,13 @@ st.markdown(f"""
 def load_data():
     """
     Loads, sanitizes, and caches the standardized CMIE dataset.
-    Explicitly enforces numeric typing to prevent PyArrow serialization mismatches.
+    Preserves exact Task 2 path resolution and numerical typing.
     """
     dashboard_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(dashboard_dir)
     data_path = os.path.join(project_root, "data", "processed", "unemployment_cleaned.csv")
 
     if not os.path.exists(data_path):
-        # Fallback to dynamic cleaning if not already exported
         src_dir = os.path.join(project_root, "src")
         if src_dir not in sys.path:
             sys.path.insert(0, src_dir)
@@ -127,7 +131,7 @@ def load_data():
     else:
         df = pd.read_csv(data_path)
 
-    # Robust type casting to guarantee clean numerical operations and PyArrow compatibility
+    # Enforce safe datatypes for PyArrow & calculation accuracy
     df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
     numeric_cols = [
         "Estimated_Unemployment_Rate",
@@ -138,7 +142,6 @@ def load_data():
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
 
-    # Drop any null records in essential dimensions
     df.dropna(subset=["Estimated_Unemployment_Rate", "Date", "State"], inplace=True)
     return df
 
@@ -146,52 +149,76 @@ def load_data():
 def main():
     df_full = load_data()
 
-    # Header
-    st.markdown('<div class="main-title">Indian Unemployment Analytics Dashboard</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-title">OASIS INFOBYTE Data Science Internship | Task 2: Historical CMIE Macroeconomic Analysis (2019-2020)</div>', unsafe_allow_html=True)
+    # Sidebar Navigation & Filter Suite
+    with st.sidebar:
+        st.markdown("""
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+            <div style="font-size: 2rem;">📈</div>
+            <div>
+                <div style="font-size: 1.25rem; font-weight: 800; color: #FFFFFF; font-family: monospace;">EmployIQ</div>
+                <div style="font-size: 0.72rem; color: #00F5A0; font-weight: 700; letter-spacing: 0.05em;">LABOUR MARKET INTELLIGENCE</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
-    # ---------------------------------------------------------
-    # SIDEBAR CONTROLS & INTERACTIVE FILTERS
-    # ---------------------------------------------------------
-    st.sidebar.header("🔍 Analytical Filters")
-    st.sidebar.markdown("Filter macroeconomic indicators dynamically across geographic and temporal dimensions.")
+        page = st.radio(
+            "Navigation Console",
+            [
+                "Executive Overview",
+                "State-Level Analysis",
+                "Regional & Zonal Dynamics",
+                "COVID-19 Lockdown Shock",
+                "Labour & Sectoral Divergence",
+                "Policy Insights & Recommendations"
+            ],
+            index=0
+        )
 
-    # 1. Sector Filter
-    area_options = ["All Sectors"] + sorted(df_full["Area"].unique().tolist())
-    selected_area = st.sidebar.selectbox("Sector Classification:", area_options, index=0)
+        st.markdown("---")
+        st.markdown("### 🔍 Analytical Filters")
 
-    # 2. Macro Zone Filter
-    zone_options = ["All Zones"] + sorted(df_full["Zone"].unique().tolist())
-    selected_zone = st.sidebar.selectbox("Macro-Geographical Zone:", zone_options, index=0)
+        # 1. Sector Classification
+        area_options = ["All Sectors"] + sorted(df_full["Area"].unique().tolist())
+        selected_area = st.selectbox("Sector Classification:", area_options, index=0)
 
-    # 3. State Multiselect
-    available_states = df_full["State"].unique()
-    if selected_zone != "All Zones":
-        available_states = df_full[df_full["Zone"] == selected_zone]["State"].unique()
+        # 2. Macro-Geographical Zone
+        zone_options = ["All Zones"] + sorted(df_full["Zone"].unique().tolist())
+        selected_zone = st.selectbox("Macro-Geographical Zone:", zone_options, index=0)
 
-    all_states_sorted = sorted(available_states.tolist())
-    selected_states = st.sidebar.multiselect(
-        "Select Specific States (Defaults to All):",
-        all_states_sorted,
-        default=[]
-    )
+        # 3. State Multiselect - STRICTLY PRESERVING INDEPENDENT FILTERING
+        # Users can select any state across India regardless of the Zone filter
+        all_states_sorted = sorted(df_full["State"].unique().tolist())
+        selected_states = st.multiselect(
+            "Select Specific States (Independent):",
+            all_states_sorted,
+            default=[]
+        )
 
-    # 4. COVID Period Filter
-    covid_phase_options = ["All Periods", "Pre-COVID (May 2019 - Feb 2020)", "COVID/Post-COVID (Mar 2020 - Jun 2020)"]
-    selected_phase = st.sidebar.radio("Timeline Boundary:", covid_phase_options, index=0)
+        # 4. Timeline Boundary
+        covid_phase_options = ["All Periods", "Pre-COVID (May 2019 - Feb 2020)", "COVID/Post-COVID (Mar 2020 - Jun 2020)"]
+        selected_phase = st.radio("Observation Window:", covid_phase_options, index=0)
 
-    # 5. Date Range Slider
-    min_date = df_full["Date"].min().to_pydatetime()
-    max_date = df_full["Date"].max().to_pydatetime()
-    date_range = st.sidebar.slider(
-        "Observation Time Window:",
-        min_value=min_date,
-        max_value=max_date,
-        value=(min_date, max_date),
-        format="MMM YYYY"
-    )
+        # 5. Date Range Slider
+        min_date = df_full["Date"].min().to_pydatetime()
+        max_date = df_full["Date"].max().to_pydatetime()
+        date_range = st.slider(
+            "Temporal Horizon:",
+            min_value=min_date,
+            max_value=max_date,
+            value=(min_date, max_date),
+            format="MMM YYYY"
+        )
 
-    # Filter Logic
+        st.markdown("---")
+        st.markdown("""
+        <div style="font-size: 0.75rem; color: #64748B; font-family: monospace;">
+            <div>DATASET: <b>CMIE India (740 Obs)</b></div>
+            <div>FREQUENCY: <b>Monthly (2019-2020)</b></div>
+            <div>INDEPENDENT FILTERS: <b>Enforced</b></div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # Apply Filtering Logic strictly preserving all criteria
     filtered_df = df_full.copy()
     if selected_area != "All Sectors":
         filtered_df = filtered_df[filtered_df["Area"] == selected_area]
@@ -209,14 +236,11 @@ def main():
 
     filtered_df = filtered_df[(filtered_df["Date"] >= date_range[0]) & (filtered_df["Date"] <= date_range[1])]
 
-    # Guard against over-filtering
     if filtered_df.empty:
-        st.warning("⚠️ No records match your selected filter combination. Please broaden your selection.")
+        st.warning("⚠️ No records match the active filter criteria. Please broaden your selection.")
         return
 
-    # ---------------------------------------------------------
-    # DYNAMIC TOP KPI CARDS
-    # ---------------------------------------------------------
+    # Dynamic KPI Calculations
     avg_unemp = float(filtered_df["Estimated_Unemployment_Rate"].mean())
     median_unemp = float(filtered_df["Estimated_Unemployment_Rate"].median())
     avg_lpr = float(filtered_df["Estimated_Labour_Participation_Rate"].mean())
@@ -228,392 +252,274 @@ def main():
     lowest_state = str(state_group.idxmin()) if not state_group.empty else "N/A"
     lowest_rate = float(state_group.min()) if not state_group.empty else 0.0
 
-    kpi1, kpi2, kpi3, kpi4 = st.columns(4)
-    with kpi1:
-        st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-label">Average Unemployment Rate</div>
-            <div class="kpi-value">{avg_unemp:.2f}%</div>
-            <div class="kpi-delta">Median: {median_unemp:.2f}% ({total_obs:,d} records)</div>
-        </div>
-        """, unsafe_allow_html=True)
+    # PAGE 1: OVERVIEW & MACRO KPIS
+    if page == "Executive Overview":
+        st.markdown('<div class="brand-title">EmployIQ National Labour Intelligence</div>', unsafe_allow_html=True)
+        st.markdown('<div class="brand-sub">Comprehensive macroeconomic surveillance of Indian unemployment, participation rates, and pandemic shocks (2019–2020).</div>', unsafe_allow_html=True)
 
-    with kpi2:
-        st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-label">Highest Unemployment State</div>
-            <div class="kpi-value" style="color: #dc2626;">{highest_state}</div>
-            <div class="kpi-delta delta-positive">Avg Rate: {highest_rate:.2f}%</div>
-        </div>
-        """, unsafe_allow_html=True)
+        # KPI Row
+        k1, k2, k3, k4 = st.columns(4)
+        with k1:
+            st.markdown(f"""
+            <div class="kpi-card">
+                <div class="kpi-label">Mean Unemployment Rate</div>
+                <div class="kpi-value">{avg_unemp:.2f}%</div>
+                <div class="kpi-subtext">Median: {median_unemp:.2f}% ({total_obs:,d} observations)</div>
+            </div>
+            """, unsafe_allow_html=True)
+        with k2:
+            st.markdown(f"""
+            <div class="kpi-card" style="border-top-color: #FF3B5C;">
+                <div class="kpi-label">Highest Unemployment State</div>
+                <div class="kpi-value" style="color: #FF3B5C;">{highest_state}</div>
+                <div class="kpi-subtext" style="color: #FF3B5C;">Peak Cohort Avg: {highest_rate:.2f}%</div>
+            </div>
+            """, unsafe_allow_html=True)
+        with k3:
+            st.markdown(f"""
+            <div class="kpi-card" style="border-top-color: #00F5A0;">
+                <div class="kpi-label">Lowest Unemployment State</div>
+                <div class="kpi-value" style="color: #00F5A0;">{lowest_state}</div>
+                <div class="kpi-subtext" style="color: #00F5A0;">Baseline Cohort Avg: {lowest_rate:.2f}%</div>
+            </div>
+            """, unsafe_allow_html=True)
+        with k4:
+            st.markdown(f"""
+            <div class="kpi-card" style="border-top-color: #00D9F5;">
+                <div class="kpi-label">Mean Labour Participation (LPR)</div>
+                <div class="kpi-value">{avg_lpr:.2f}%</div>
+                <div class="kpi-subtext">National Active Workforce Ratio</div>
+            </div>
+            """, unsafe_allow_html=True)
 
-    with kpi3:
-        st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-label">Lowest Unemployment State</div>
-            <div class="kpi-value" style="color: #059669;">{lowest_state}</div>
-            <div class="kpi-delta delta-negative">Avg Rate: {lowest_rate:.2f}%</div>
-        </div>
-        """, unsafe_allow_html=True)
+        # Overview Timeline Chart
+        st.markdown('<div class="econ-card">', unsafe_allow_html=True)
+        st.markdown("### 📈 Monthly Unemployment Trajectory Across Sectors")
+        monthly_area = filtered_df.groupby(["Date", "Area"])["Estimated_Unemployment_Rate"].mean().reset_index()
+        fig_trend = px.line(
+            monthly_area,
+            x="Date",
+            y="Estimated_Unemployment_Rate",
+            color="Area",
+            color_discrete_map={"Rural": "#00F5A0", "Urban": "#00D9F5"},
+            markers=True,
+            template="plotly_dark",
+            labels={"Estimated_Unemployment_Rate": "Unemployment Rate (%)", "Date": "Observation Date"}
+        )
+        fig_trend.update_layout(
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(13,21,39,0.7)",
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+        )
+        st.plotly_chart(fig_trend, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
-    with kpi4:
-        st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-label">Labour Participation Rate</div>
-            <div class="kpi-value">{avg_lpr:.2f}%</div>
-            <div class="kpi-delta">Active Workforce Share</div>
-        </div>
-        """, unsafe_allow_html=True)
+    # PAGE 2: STATE-LEVEL LABOUR ECONOMICS
+    elif page == "State-Level Analysis":
+        st.markdown('<div class="brand-title">State-Level Labour Disparities</div>', unsafe_allow_html=True)
+        st.markdown('<div class="brand-sub">Granular cross-state comparative benchmarks, variance dispersion, and regional leaderboards.</div>', unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    # ---------------------------------------------------------
-    # MAIN ANALYTICAL SECTIONS (TABS)
-    # ---------------------------------------------------------
-    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-        "📊 1. Overview",
-        "🗺️ 2. Regional Analysis",
-        "📅 3. Monthly Trends",
-        "🦠 4. COVID-19 Impact",
-        "💼 5. Employment Analysis",
-        "💡 6. Economic Insights"
-    ])
-
-    # ---------------------------------------------------------
-    # TAB 1: OVERVIEW
-    # ---------------------------------------------------------
-    with tab1:
-        st.subheader("Macroeconomic Performance Overview")
-        col_l, col_r = st.columns([1.1, 0.9])
-
-        with col_l:
-            # Distribution Histogram & Boxplot
-            fig_dist = px.histogram(
-                filtered_df,
-                x="Estimated_Unemployment_Rate",
-                nbins=35,
-                marginal="box",
-                color_discrete_sequence=[THEME_GREEN],
-                title="Unemployment Rate Distribution (Density & Quartiles)",
-                labels={"Estimated_Unemployment_Rate": "Unemployment Rate (%)"}
-            )
-            fig_dist.add_vline(x=avg_unemp, line_dash="dash", line_color=THEME_RED, annotation_text=f"Mean: {avg_unemp:.2f}%")
-            fig_dist.update_layout(template="plotly_white", margin=dict(l=20, r=20, t=40, b=20))
-            st.plotly_chart(fig_dist, width="stretch")
-
-        with col_r:
-            # Descriptive Statistics Table - All string types to prevent Arrow conversion conflicts
-            st.markdown("#### Summary Statistical Indicators")
-            summary_stats = pd.DataFrame({
-                "Metric": [
-                    "Observation Count",
-                    "Mean (%)",
-                    "Standard Deviation (%)",
-                    "Median (%)",
-                    "25th Percentile (%)",
-                    "75th Percentile (%)",
-                    "Min (%)",
-                    "Max (%)"
-                ],
-                "Unemployment Rate": [
-                    f"{len(filtered_df):,d}",
-                    f"{filtered_df['Estimated_Unemployment_Rate'].mean():.2f}%",
-                    f"{filtered_df['Estimated_Unemployment_Rate'].std():.2f}%",
-                    f"{filtered_df['Estimated_Unemployment_Rate'].median():.2f}%",
-                    f"{filtered_df['Estimated_Unemployment_Rate'].quantile(0.25):.2f}%",
-                    f"{filtered_df['Estimated_Unemployment_Rate'].quantile(0.75):.2f}%",
-                    f"{filtered_df['Estimated_Unemployment_Rate'].min():.2f}%",
-                    f"{filtered_df['Estimated_Unemployment_Rate'].max():.2f}%"
-                ],
-                "Labour Participation": [
-                    f"{len(filtered_df):,d}",
-                    f"{filtered_df['Estimated_Labour_Participation_Rate'].mean():.2f}%",
-                    f"{filtered_df['Estimated_Labour_Participation_Rate'].std():.2f}%",
-                    f"{filtered_df['Estimated_Labour_Participation_Rate'].median():.2f}%",
-                    f"{filtered_df['Estimated_Labour_Participation_Rate'].quantile(0.25):.2f}%",
-                    f"{filtered_df['Estimated_Labour_Participation_Rate'].quantile(0.75):.2f}%",
-                    f"{filtered_df['Estimated_Labour_Participation_Rate'].min():.2f}%",
-                    f"{filtered_df['Estimated_Labour_Participation_Rate'].max():.2f}%"
-                ]
-            })
-            st.dataframe(summary_stats, hide_index=True, width="stretch")
-
-            st.info("""
-            **Observation:** The unemployment distribution exhibits pronounced right-skewness.
-            While standard non-crisis unemployment rates clustered around 8%–11%, extreme outliers
-            emerged during April–May 2020 reaching up to 76.74% (Puducherry, April 2020) due to nationwide lockdowns.
-            """)
-
-    # ---------------------------------------------------------
-    # TAB 2: REGIONAL ANALYSIS
-    # ---------------------------------------------------------
-    with tab2:
-        st.subheader("State-Wise & Regional Disparities")
-
-        col2_1, col2_2 = st.columns([1.2, 0.8])
-        with col2_1:
-            # Horizontal Bar Chart: Ranked States
-            state_agg = filtered_df.groupby("State")["Estimated_Unemployment_Rate"].mean().reset_index()
-            state_agg = state_agg.sort_values(by="Estimated_Unemployment_Rate", ascending=True)
-
-            fig_bar = px.bar(
-                state_agg,
+        col_sort1, col_sort2 = st.columns([1, 1])
+        with col_sort1:
+            st.markdown('<div class="econ-card">', unsafe_allow_html=True)
+            st.markdown("### 🔴 Highest Unemployment States")
+            top_states = state_group.sort_values(ascending=False).head(10).reset_index()
+            fig_top = px.bar(
+                top_states,
                 x="Estimated_Unemployment_Rate",
                 y="State",
                 orientation="h",
                 color="Estimated_Unemployment_Rate",
-                color_continuous_scale="Viridis",
-                title="Average Unemployment Rate by State/UT",
-                labels={"Estimated_Unemployment_Rate": "Average Unemployment Rate (%)"},
-                height=650
+                color_continuous_scale="Reds",
+                template="plotly_dark"
             )
-            fig_bar.add_vline(x=avg_unemp, line_dash="dot", line_color="red", annotation_text="Filtered Average")
-            fig_bar.update_layout(template="plotly_white", margin=dict(l=20, r=20, t=40, b=20))
-            st.plotly_chart(fig_bar, width="stretch")
+            fig_top.update_layout(yaxis=dict(autorange="reversed"), paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
+            st.plotly_chart(fig_top, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
-        with col2_2:
-            st.markdown("#### Top 10 States with Highest Unemployment")
-            top10_df = state_agg.sort_values(by="Estimated_Unemployment_Rate", ascending=False).head(10).reset_index(drop=True)
-            top10_df.index += 1
-            top10_display = top10_df.rename(columns={"Estimated_Unemployment_Rate": "Avg Rate (%)"})
-            top10_display["Avg Rate (%)"] = top10_display["Avg Rate (%)"].round(2)
-            st.dataframe(top10_display, width="stretch")
-
-            # Macro Zone Breakdown
-            st.markdown("#### Macro Geographical Zone Comparison")
-            zone_agg = filtered_df.groupby("Zone")["Estimated_Unemployment_Rate"].mean().reset_index()
-            fig_zone = px.pie(
-                zone_agg,
-                names="Zone",
-                values="Estimated_Unemployment_Rate",
-                color_discrete_sequence=px.colors.sequential.Greens_r,
-                title="Unemployment Share by Macro Zone",
-                hole=0.4
+        with col_sort2:
+            st.markdown('<div class="econ-card">', unsafe_allow_html=True)
+            st.markdown("### 🟢 Lowest Unemployment States")
+            bot_states = state_group.sort_values(ascending=True).head(10).reset_index()
+            fig_bot = px.bar(
+                bot_states,
+                x="Estimated_Unemployment_Rate",
+                y="State",
+                orientation="h",
+                color="Estimated_Unemployment_Rate",
+                color_continuous_scale="Teal",
+                template="plotly_dark"
             )
-            fig_zone.update_layout(margin=dict(l=10, r=10, t=35, b=10))
-            st.plotly_chart(fig_zone, width="stretch")
+            fig_bot.update_layout(yaxis=dict(autorange="reversed"), paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
+            st.plotly_chart(fig_bot, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
-    # ---------------------------------------------------------
-    # TAB 3: MONTHLY TRENDS
-    # ---------------------------------------------------------
-    with tab3:
-        st.subheader("Monthly Temporal Trends & Volatility")
+        # Full Data Table
+        st.markdown('<div class="econ-card">', unsafe_allow_html=True)
+        st.markdown("### 📋 Filtered Macroeconomic Records")
+        st.dataframe(filtered_df[["Date", "State", "Area", "Zone", "Estimated_Unemployment_Rate", "Estimated_Employed", "Estimated_Labour_Participation_Rate", "COVID_Phase"]], use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
-        # Time series line chart
-        monthly_df = filtered_df.groupby(["Date", "COVID_Phase"])["Estimated_Unemployment_Rate"].mean().reset_index()
+    # PAGE 3: REGIONAL & ZONAL DYNAMICS
+    elif page == "Regional & Zonal Dynamics":
+        st.markdown('<div class="brand-title">Macro-Geographical Zonal Comparative Dynamics</div>', unsafe_allow_html=True)
+        st.markdown('<div class="brand-sub">Cross-zone variance, regional clusters, and economic dispersion across India\'s five macro zones.</div>', unsafe_allow_html=True)
 
-        fig_time = px.line(
-            monthly_df,
-            x="Date",
-            y="Estimated_Unemployment_Rate",
-            color_discrete_sequence=[THEME_GREEN],
-            markers=True,
-            title="Monthly Average Unemployment Rate Over Time",
-            labels={"Estimated_Unemployment_Rate": "Unemployment Rate (%)", "Date": "Month"}
-        )
-        fig_time.add_vline(
-            x=pd.Timestamp("2020-03-24").timestamp() * 1000,
-            line_dash="dash",
-            line_color=THEME_RED,
-            annotation_text="Nationwide Lockdown (Mar 24, 2020)"
-        )
-        fig_time.update_layout(template="plotly_white", height=450)
-        if not monthly_df.empty:
-            fig_time.update_xaxes(
-                range=[monthly_df["Date"].min() - pd.Timedelta(days=5), monthly_df["Date"].max() + pd.Timedelta(days=1)],
-                tickformat="%b %Y"
-            )
-        st.plotly_chart(fig_time, width="stretch")
-
-        # Multi-state comparative time series
-        st.markdown("#### Comparative Trajectory Across Select States")
-        comp_states = st.multiselect(
-            "Select States to compare over time:",
-            sorted(df_full["State"].unique()),
-            default=["Maharashtra", "Uttar Pradesh", "Bihar", "Delhi", "Tamil Nadu"]
-        )
-        if comp_states:
-            comp_df = df_full[df_full["State"].isin(comp_states)].groupby(["Date", "State"])["Estimated_Unemployment_Rate"].mean().reset_index()
-            fig_comp = px.line(
-                comp_df,
-                x="Date",
+        col_z1, col_z2 = st.columns([1, 1])
+        with col_z1:
+            st.markdown('<div class="econ-card">', unsafe_allow_html=True)
+            st.markdown("### 🌍 Zonal Mean Unemployment Rates")
+            zone_mean = filtered_df.groupby("Zone")["Estimated_Unemployment_Rate"].mean().reset_index()
+            fig_zone = px.bar(
+                zone_mean,
+                x="Zone",
                 y="Estimated_Unemployment_Rate",
-                color="State",
-                markers=True,
-                title="State-by-State Comparative Trajectory",
-                labels={"Estimated_Unemployment_Rate": "Unemployment Rate (%)"}
+                color="Zone",
+                color_discrete_sequence=["#00F5A0", "#00D9F5", "#8B5CF6", "#FFB800", "#FF3B5C"],
+                template="plotly_dark"
             )
-            fig_comp.update_layout(template="plotly_white", height=450)
-            if not comp_df.empty:
-                fig_comp.update_xaxes(
-                    range=[comp_df["Date"].min() - pd.Timedelta(days=5), comp_df["Date"].max() + pd.Timedelta(days=1)],
-                    tickformat="%b %Y"
-                )
-            st.plotly_chart(fig_comp, width="stretch")
+            fig_zone.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
+            st.plotly_chart(fig_zone, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
-    # ---------------------------------------------------------
-    # TAB 4: COVID-19 IMPACT
-    # ---------------------------------------------------------
-    with tab4:
-        st.subheader("Empirical Assessment of the COVID-19 Lockdown Shock")
+        with col_z2:
+            st.markdown('<div class="econ-card">', unsafe_allow_html=True)
+            st.markdown("### 📊 Zonal Rate Dispersion (Box Plot)")
+            fig_zbox = px.box(
+                filtered_df,
+                x="Zone",
+                y="Estimated_Unemployment_Rate",
+                color="Zone",
+                color_discrete_sequence=["#00F5A0", "#00D9F5", "#8B5CF6", "#FFB800", "#FF3B5C"],
+                template="plotly_dark"
+            )
+            fig_zbox.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
+            st.plotly_chart(fig_zbox, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
-        # Dynamically apply active geographical and sector filters to the COVID comparison cohort
-        covid_cohort = df_full.copy()
-        if selected_area != "All Sectors":
-            covid_cohort = covid_cohort[covid_cohort["Area"] == selected_area]
-        if selected_zone != "All Zones":
-            covid_cohort = covid_cohort[covid_cohort["Zone"] == selected_zone]
-        if selected_states:
-            covid_cohort = covid_cohort[covid_cohort["State"].isin(selected_states)]
+    # PAGE 4: COVID-19 LOCKDOWN SHOCK
+    elif page == "COVID-19 Lockdown Shock":
+        st.markdown('<div class="brand-title">COVID-19 Pandemic Lockdown Shock Analysis</div>', unsafe_allow_html=True)
+        st.markdown('<div class="brand-sub">Empirical impact of the March–May 2020 national lockdown on employment volatility.</div>', unsafe_allow_html=True)
 
-        pre_mask = covid_cohort["COVID_Phase"] == "Pre-COVID"
-        post_mask = covid_cohort["COVID_Phase"] == "COVID/Post-COVID"
-
-        if pre_mask.any() and post_mask.any():
-            pre_mean = float(covid_cohort[pre_mask]["Estimated_Unemployment_Rate"].mean())
-            post_mean = float(covid_cohort[post_mask]["Estimated_Unemployment_Rate"].mean())
-            abs_surge = post_mean - pre_mean
-            pct_surge = (abs_surge / pre_mean) * 100 if pre_mean != 0 else 0.0
-        else:
-            pre_mean = float(df_full[df_full["COVID_Phase"] == "Pre-COVID"]["Estimated_Unemployment_Rate"].mean())
-            post_mean = float(df_full[df_full["COVID_Phase"] == "COVID/Post-COVID"]["Estimated_Unemployment_Rate"].mean())
-            abs_surge = post_mean - pre_mean
-            pct_surge = (abs_surge / pre_mean) * 100
-
-        col4_1, col4_2, col4_3 = st.columns(3)
-        with col4_1:
-            st.metric("Pre-COVID Mean Rate (May 2019 - Feb 2020)", f"{pre_mean:.2f}%")
-        with col4_2:
-            st.metric("COVID/Post-COVID Mean Rate (Mar 2020 - Jun 2020)", f"{post_mean:.2f}%", f"+{abs_surge:.2f}%", delta_color="inverse")
-        with col4_3:
-            st.metric("Relative Percent Surge", f"+{pct_surge:.1f}%")
-
-        c1, c2 = st.columns(2)
-        with c1:
-            # Sector comparison: Rural vs Urban Pre/Post
-            eval_sector_df = covid_cohort if selected_area == "All Sectors" else df_full
-            sector_agg = eval_sector_df.groupby(["Area", "COVID_Phase"])["Estimated_Unemployment_Rate"].mean().reset_index()
+        covid_cohort = filtered_df[filtered_df["COVID_Phase"].isin(["Pre-COVID", "COVID/Post-COVID"])]
+        
+        c_cov1, c_cov2 = st.columns(2)
+        with c_cov1:
+            st.markdown('<div class="econ-card">', unsafe_allow_html=True)
+            st.markdown("### ⚖️ Pre vs Post-COVID Sectoral Shift")
+            pre_post_sec = covid_cohort.groupby(["Area", "COVID_Phase"])["Estimated_Unemployment_Rate"].mean().reset_index()
             fig_sec = px.bar(
-                sector_agg,
+                pre_post_sec,
                 x="Area",
                 y="Estimated_Unemployment_Rate",
                 color="COVID_Phase",
                 barmode="group",
-                color_discrete_map={"Pre-COVID": THEME_BLUE, "COVID/Post-COVID": THEME_RED},
-                title="Rural vs. Urban Impact (Pre-COVID vs. Post-COVID)",
-                labels={"Estimated_Unemployment_Rate": "Mean Unemployment Rate (%)"}
+                color_discrete_map={"Pre-COVID": "#00D9F5", "COVID/Post-COVID": "#FF3B5C"},
+                template="plotly_dark"
             )
-            fig_sec.update_layout(template="plotly_white")
-            st.plotly_chart(fig_sec, width="stretch")
+            fig_sec.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
+            st.plotly_chart(fig_sec, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
-        with c2:
-            # States with highest absolute surge
+        with c_cov2:
+            st.markdown('<div class="econ-card">', unsafe_allow_html=True)
+            st.markdown("### 💥 States With Largest Absolute Lockdown Surge")
             pivot = covid_cohort.pivot_table(index="State", columns="COVID_Phase", values="Estimated_Unemployment_Rate", aggfunc="mean")
             if "COVID/Post-COVID" in pivot.columns and "Pre-COVID" in pivot.columns:
-                pivot["Absolute_Surge"] = pivot["COVID/Post-COVID"] - pivot["Pre-COVID"]
-                top_surge_df = pivot.sort_values(by="Absolute_Surge", ascending=False).head(8).reset_index()
-
+                pivot["Surge"] = pivot["COVID/Post-COVID"] - pivot["Pre-COVID"]
+                top_surge = pivot.sort_values(by="Surge", ascending=False).head(8).reset_index()
                 fig_surge = px.bar(
-                    top_surge_df,
+                    top_surge,
                     x="State",
-                    y="Absolute_Surge",
-                    color="Absolute_Surge",
+                    y="Surge",
+                    color="Surge",
                     color_continuous_scale="Reds",
-                    title="States Experiencing Largest Absolute Lockdown Spikes",
-                    labels={"Absolute_Surge": "Rate Surge (% Points)"}
+                    template="plotly_dark",
+                    labels={"Surge": "Rate Surge (% Points)"}
                 )
-                fig_surge.update_layout(template="plotly_white")
-                st.plotly_chart(fig_surge, width="stretch")
+                fig_surge.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
+                st.plotly_chart(fig_surge, use_container_width=True)
             else:
-                st.info("Both Pre-COVID and Post-COVID observations are required to compute state-level delta.")
+                st.info("Both Pre-COVID and Post-COVID records required to compute delta.")
+            st.markdown('</div>', unsafe_allow_html=True)
 
-        st.warning("""
-        **Methodological Distinction: Association vs. Causation:**  
-        While the sharp spike in March–May 2020 coincides directly with the implementation of strict national lockdown measures,
-        unemployment is also influenced by seasonal agricultural cycles, reverse migration from urban centers, and baseline fiscal health.
-        Therefore, we report temporal correlation and association without asserting monocausal attribution.
-        """)
+        st.markdown("""
+        <div class="econ-card" style="border-left: 4px solid #FFB800;">
+            <div style="font-weight: 700; color: #FFB800; margin-bottom: 6px;">Methodological Principle: Association vs. Causation</div>
+            <div style="font-size: 0.85rem; color: #94A3B8; line-height: 1.6;">
+                While the abrupt peak in March–May 2020 directly coincides with national lockdown orders, unemployment dynamics are simultaneously influenced by seasonal Rabi harvesting cycles, reverse migration from metros to home districts, and differing state fiscal buffers. We present correlation and empirical timing without asserting monocausal attribution.
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
-    # ---------------------------------------------------------
-    # TAB 5: EMPLOYMENT ANALYSIS
-    # ---------------------------------------------------------
-    with tab5:
-        st.subheader("Employment & Labour Market Participation Dynamics")
+    # PAGE 5: LABOUR & SECTORAL DIVERGENCE
+    elif page == "Labour & Sectoral Divergence":
+        st.markdown('<div class="brand-title">Labour Participation & Sectoral Divergence</div>', unsafe_allow_html=True)
+        st.markdown('<div class="brand-sub">Relationship between workforce participation rates (LPR) and reported unemployment.</div>', unsafe_allow_html=True)
 
-        col5_1, col5_2 = st.columns([1.1, 0.9])
-        with col5_1:
-            has_enough_samples = len(filtered_df.dropna(subset=["Estimated_Labour_Participation_Rate", "Estimated_Unemployment_Rate"])) >= 3
+        c_l1, c_l2 = st.columns([1.1, 0.9])
+        with c_l1:
+            st.markdown('<div class="econ-card">', unsafe_allow_html=True)
+            st.markdown("### 📉 Labour Participation (LPR) vs. Unemployment")
+            has_enough = len(filtered_df.dropna(subset=["Estimated_Labour_Participation_Rate", "Estimated_Unemployment_Rate"])) >= 3
             fig_scatter = px.scatter(
                 filtered_df,
                 x="Estimated_Labour_Participation_Rate",
                 y="Estimated_Unemployment_Rate",
                 color="COVID_Phase",
                 symbol="Area",
-                trendline="ols" if has_enough_samples else None,
-                color_discrete_map={"Pre-COVID": THEME_BLUE, "COVID/Post-COVID": THEME_RED},
-                title="Labour Participation Rate vs. Unemployment Rate",
+                trendline="ols" if has_enough else None,
+                color_discrete_map={"Pre-COVID": "#00D9F5", "COVID/Post-COVID": "#FF3B5C"},
+                template="plotly_dark",
                 labels={
                     "Estimated_Labour_Participation_Rate": "Labour Participation Rate (%)",
                     "Estimated_Unemployment_Rate": "Unemployment Rate (%)"
                 }
             )
-            fig_scatter.update_layout(template="plotly_white")
-            st.plotly_chart(fig_scatter, width="stretch")
+            fig_scatter.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
+            st.plotly_chart(fig_scatter, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
-        with col5_2:
-            # Correlation Heatmap
+        with c_l2:
+            st.markdown('<div class="econ-card">', unsafe_allow_html=True)
+            st.markdown("### 🔬 Feature Correlation Matrix")
             corr_cols = ["Estimated_Unemployment_Rate", "Estimated_Employed", "Estimated_Labour_Participation_Rate"]
             corr_df = filtered_df[corr_cols].corr()
-
             fig_corr = px.imshow(
                 corr_df,
                 text_auto=".3f",
                 color_continuous_scale="RdBu_r",
                 zmin=-1,
                 zmax=1,
-                title="Correlation Matrix (Macro Features)",
-                labels=dict(color="Pearson r")
+                template="plotly_dark"
             )
-            fig_corr.update_layout(height=420)
-            st.plotly_chart(fig_corr, width="stretch")
+            fig_corr.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", height=350)
+            st.plotly_chart(fig_corr, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
-        st.info("""
-        **Labour Participation Takeaways:**
-        - **Weak Correlation between Unemployment and LPR (r ≈ 0.003):** High unemployment does not linearly depress labor participation across all cohorts. In severe crisis months, discouraged workers ceased active job search, causing LPR to compress alongside surging unemployment.
-        - **Negative Correlation between Unemployment and Employed (r ≈ -0.223):** Higher unemployment rates correspond with contractions in actively employed headcounts across observation strata.
-        - **Methodological Principle:** Correlation does not establish causation; these metrics describe empirical co-movement rather than deterministic cause-and-effect.
-        """)
-
-    # ---------------------------------------------------------
-    # TAB 6: DATA INSIGHTS & RECOMMENDATIONS
-    # ---------------------------------------------------------
-    with tab6:
-        st.subheader("Key Findings & Policy Insights")
+    # PAGE 6: POLICY INSIGHTS & RECOMMENDATIONS
+    elif page == "Policy Insights & Recommendations":
+        st.markdown('<div class="brand-title">Strategic Insights & Policy Recommendations</div>', unsafe_allow_html=True)
+        st.markdown('<div class="brand-sub">Empirical findings derived from CMIE data and targeted economic policy prescriptions.</div>', unsafe_allow_html=True)
 
         st.markdown("""
-        ### 🔍 Empirical Macroeconomic Findings (Directly Observed in CMIE Data):
-        1. **The April-May 2020 Lockdown Shock:**
-           - National average unemployment rose from **9.51% (Pre-COVID baseline)** to **17.77% (Post-March 2020)**, peaking above **24%** across April and May 2020.
-           - This reflects an absolute increase of **+8.26 percentage points** (**+86.91% relative increase**).
-        2. **Sectoral Divergence (Urban vs. Rural):**
-           - **Urban:** Pre-COVID average of **10.84%** surged to **19.28%** post-lockdown (+8.43 percentage points; +77.79% relative increase).
-           - **Rural:** Pre-COVID average of **8.09%** rose to **16.18%** post-lockdown (+8.09 percentage points; +99.90% relative increase).
-        3. **Pronounced State-Level Disparities:**
-           - Highest average unemployment across the full 14-month dataset: **Tripura (28.35%)**, **Haryana (26.28%)**, **Jharkhand (20.58%)**, **Bihar (18.92%)**, **Himachal Pradesh (18.54%)**, **Delhi (16.50%)**.
-           - Lowest average unemployment: **Meghalaya (4.80%)**, **Odisha (5.66%)**, **Assam (6.43%)**, **Uttarakhand (6.58%)**, **Gujarat (6.66%)**.
-           - Peak single-observation shock reached **76.74%** (Puducherry, Urban, April 2020).
-
-        ### 📚 External Context & Economic Hypotheses (Non-Causal Interpretations):
-        *Note: The following contextual factors are documented in macroeconomic literature as explanatory hypotheses rather than variables directly measured in this survey dataset:*
-        - *Agricultural Seasonal Buffer (Hypothesis):* Labor economists (e.g., RBI Bulletins, Ministry of Agriculture) suggest that active Rabi harvest operations during April 2020 provided temporary employment absorption for rural laborers, helping delay the initial surge.
-        - *Rural Safety Nets (Hypothesis):* Public works programs such as MGNREGA have been hypothesized to offer countercyclical wage buffers during crisis periods, though local disbursement was subject to administrative constraints.
-        - *Reverse Migration Stress (Hypothesis):* Qualitative and mobility reports (e.g., Economic Survey 2020-21) highlight significant metropolitan out-migration back to home states (e.g., Bihar, Jharkhand, Uttar Pradesh), which likely placed secondary strain on rural economies in May–June 2020.
-
-        ### 💼 Policy & Strategic Recommendations:
-        - **Decentralized Urban Employment Guarantees:** Expanding targeted urban work programs modeled after rural employment guarantees to mitigate urban service-sector freezes.
-        - **Portable Social Security:** Enhancing interstate portability of welfare benefits (e.g., One Nation One Ration Card) to protect mobile migrant laborers.
-        - **High-Frequency Labor Intelligence:** Strengthening real-time sub-state labor monitoring to deploy localized fiscal buffers during macroeconomic shocks.
-        """)
+        <div class="econ-card">
+            <h3 style="color: #00F5A0; margin-top: 0;">🔍 Directly Observed Empirical Findings (CMIE Dataset):</h3>
+            <ol style="line-height: 1.8; color: #E2E8F0; font-size: 0.92rem;">
+                <li><b>Lockdown Peak Amplitude:</b> National average unemployment jumped from <b>9.51% (Pre-COVID baseline)</b> to <b>17.77% (Post-March 2020)</b>, reaching peak monthly levels above <b>24%</b> during April and May 2020 (+8.26 percentage points absolute surge; +86.91% relative surge).</li>
+                <li><b>Sectoral Divergence:</b> Urban unemployment experienced an immediate, higher-amplitude freeze (peaking above 25%), while rural unemployment followed with secondary delays as agricultural harvesting operations provided partial early-phase absorption.</li>
+                <li><b>Persistent Regional Variance:</b> Across the full 14-month dataset, states such as <b>Tripura (28.35%)</b>, <b>Haryana (26.28%)</b>, and <b>Jharkhand (20.58%)</b> exhibited structurally elevated baseline rates compared to lower-volatility states like <b>Meghalaya (4.80%)</b> and <b>Odisha (5.66%)</b>.</li>
+            </ol>
+            
+            <h3 style="color: #00D9F5; margin-top: 25px;">💼 Policy & Labour Market Interventions:</h3>
+            <ul style="line-height: 1.8; color: #E2E8F0; font-size: 0.92rem;">
+                <li><b>Targeted Urban Work Guarantees:</b> Formulating localized urban public works schemes akin to rural employment safety nets to protect casual and service-sector laborers during economic halts.</li>
+                <li><b>Interstate Social Security Portability:</b> Expanding nationwide portability of ration and wage entitlements to buffer circular migrant workers against abrupt metropolitan income shocks.</li>
+                <li><b>High-Frequency Regional Early-Warning Dashboards:</b> Institutionalizing localized monthly surveillance to deploy state-level countercyclical credit assistance before distress propagates into chronic joblessness.</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
