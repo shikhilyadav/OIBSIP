@@ -1,0 +1,15 @@
+# OIBSIP Task 4: Email / SMS Spam Detection Dependencies
+# Python Environment: Python 3.14+ (Tested on Python 3.14.6)
+pandas>=2.2.0
+numpy>=1.26.0
+scikit-learn>=1.4.0
+matplotlib>=3.8.0
+seaborn>=0.13.0
+nltk>=3.8.0
+wordcloud>=1.9.0
+nbformat>=5.9.0
+nbconvert>=7.14.0
+ipykernel>=6.29.0
+# Pre-trained Transformer Extension (BERT-Tiny)
+torch>=2.15.0
+transformers>=5.24.0

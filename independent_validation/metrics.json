@@ -1,0 +1,251 @@
+{
+  "dataset_provenance": {
+    "candidate_source": "shaghayegh-hp/Smishing_Dataset (ACM 2025)",
+    "total_remote_records": 84863,
+    "uci_overlap_records_filtered": 5572,
+    "independent_unseen_candidates": 67895,
+    "benchmark_sample_size": 2000,
+    "validation_subset_size": 1000,
+    "held_out_test_subset_size": 1000,
+    "class_balance": "50% Ham / 50% Spam (Balanced)"
+  },
+  "naive_bayes_test": {
+    "accuracy": 0.535,
+    "precision": 0.972972972972973,
+    "recall": 0.072,
+    "f1": 0.1340782122905028,
+    "macro_f1": 0.4081190788041714,
+    "confusion_matrix": [
+      [
+        499,
+        1
+      ],
+      [
+        464,
+        36
+      ]
+    ],
+    "tn": 499,
+    "fp": 1,
+    "fn": 464,
+    "tp": 36
+  },
+  "bert_tiny_test": {
+    "accuracy": 0.871,
+    "precision": 0.9696202531645569,
+    "recall": 0.766,
+    "f1": 0.8558659217877095,
+    "macro_f1": 0.8695619201698728,
+    "confusion_matrix": [
+      [
+        488,
+        12
+      ],
+      [
+        117,
+        383
+      ]
+    ],
+    "tn": 488,
+    "fp": 12,
+    "fn": 117,
+    "tp": 383
+  },
+  "hybrid_decision_layer": {
+    "threshold_spam": 0.6,
+    "threshold_ham": 0.1,
+    "total_test_samples": 1000,
+    "auto_ham_count": 447,
+    "auto_spam_count": 362,
+    "suspicious_review_count": 191,
+    "review_rate_pct": 19.1,
+    "spams_in_review": 135,
+    "hams_in_review": 56,
+    "automated_decisions": {
+      "accuracy": 0.9666254635352287,
+      "precision": 0.9668508287292817,
+      "recall": 0.958904109589041,
+      "f1": 0.9628610729023384,
+      "macro_f1": 0.966279021299654,
+      "confusion_matrix": [
+        [
+          432,
+          12
+        ],
+        [
+          15,
+          350
+        ]
+      ],
+      "tn": 432,
+      "fp": 12,
+      "fn": 15,
+      "tp": 350
+    },
+    "full_triage_fallback": {
+      "accuracy": 0.653,
+      "precision": 0.9636363636363636,
+      "recall": 0.318,
+      "f1": 0.4781954887218045,
+      "macro_f1": 0.6091351975444228
+    }
+  },
+  "stress_testing": [
+    {
+      "Category": "Legit Family",
+      "Message": "Hey mom, are we having lunch together today?",
+      "BERT Logits [Ham, Spam]": [
+        1.221,
+        -1.472
+      ],
+      "Logit Diff (L0 - L1)": 2.693,
+      "BERT Spam Prob (%)": 6.34,
+      "BERT Label": "HAM",
+      "NB Spam Prob (%)": 0.47,
+      "NB Label": "HAM"
+    },
+    {
+      "Category": "Legit Appointment",
+      "Message": "Your appointment with Dr. Smith is confirmed for tomorrow at 2 PM.",
+      "BERT Logits [Ham, Spam]": [
+        1.206,
+        -1.428
+      ],
+      "Logit Diff (L0 - L1)": 2.635,
+      "BERT Spam Prob (%)": 6.69,
+      "BERT Label": "HAM",
+      "NB Spam Prob (%)": 4.69,
+      "NB Label": "HAM"
+    },
+    {
+      "Category": "Legit Bank Alert",
+      "Message": "Acct 4921: Deposited $500.00. Current balance is $1,245.80.",
+      "BERT Logits [Ham, Spam]": [
+        -0.073,
+        -0.045
+      ],
+      "Logit Diff (L0 - L1)": -0.028,
+      "BERT Spam Prob (%)": 50.69,
+      "BERT Label": "SPAM",
+      "NB Spam Prob (%)": 39.3,
+      "NB Label": "HAM"
+    },
+    {
+      "Category": "Promo Unprompted Prize",
+      "Message": "Congratulations! You have won a free prize. Claim now!",
+      "BERT Logits [Ham, Spam]": [
+        1.209,
+        -1.463
+      ],
+      "Logit Diff (L0 - L1)": 2.672,
+      "BERT Spam Prob (%)": 6.47,
+      "BERT Label": "HAM",
+      "NB Spam Prob (%)": 95.0,
+      "NB Label": "SPAM"
+    },
+    {
+      "Category": "Promo E-Commerce",
+      "Message": "Exclusive offer: Get 50% discount on your next online purchase.",
+      "BERT Logits [Ham, Spam]": [
+        0.655,
+        -0.848
+      ],
+      "Logit Diff (L0 - L1)": 1.503,
+      "BERT Spam Prob (%)": 18.19,
+      "BERT Label": "HAM",
+      "NB Spam Prob (%)": 16.38,
+      "NB Label": "HAM"
+    },
+    {
+      "Category": "Promo Cash Reward",
+      "Message": "You are selected for an instant cash reward of $10,000.",
+      "BERT Logits [Ham, Spam]": [
+        1.128,
+        -1.347
+      ],
+      "Logit Diff (L0 - L1)": 2.475,
+      "BERT Spam Prob (%)": 7.76,
+      "BERT Label": "HAM",
+      "NB Spam Prob (%)": 72.99,
+      "NB Label": "SPAM"
+    },
+    {
+      "Category": "Phishing Bank Link",
+      "Message": "Urgent: Your Chase bank account has been suspended. Verify at https://chase-login-auth.com",
+      "BERT Logits [Ham, Spam]": [
+        0.429,
+        -0.662
+      ],
+      "Logit Diff (L0 - L1)": 1.091,
+      "BERT Spam Prob (%)": 25.15,
+      "BERT Label": "HAM",
+      "NB Spam Prob (%)": 32.46,
+      "NB Label": "HAM"
+    },
+    {
+      "Category": "Phishing Package Link",
+      "Message": "USPS: Your package could not be delivered. Update address at https://postal-track-delivery.xyz",
+      "BERT Logits [Ham, Spam]": [
+        -0.33,
+        0.196
+      ],
+      "Logit Diff (L0 - L1)": -0.526,
+      "BERT Spam Prob (%)": 62.85,
+      "BERT Label": "SPAM",
+      "NB Spam Prob (%)": 13.96,
+      "NB Label": "HAM"
+    },
+    {
+      "Category": "Phishing Account Hold",
+      "Message": "Your Netflix account is on hold. Update billing information immediately.",
+      "BERT Logits [Ham, Spam]": [
+        1.014,
+        -1.18
+      ],
+      "Logit Diff (L0 - L1)": 2.194,
+      "BERT Spam Prob (%)": 10.03,
+      "BERT Label": "HAM",
+      "NB Spam Prob (%)": 28.06,
+      "NB Label": "HAM"
+    },
+    {
+      "Category": "Traditional UK Phone",
+      "Message": "WINNER!! Claim your \u00a31000 cash prize now! Call 09061701461 to claim.",
+      "BERT Logits [Ham, Spam]": [
+        -1.038,
+        1.119
+      ],
+      "Logit Diff (L0 - L1)": -2.157,
+      "BERT Spam Prob (%)": 89.63,
+      "BERT Label": "SPAM",
+      "NB Spam Prob (%)": 98.5,
+      "NB Label": "SPAM"
+    },
+    {
+      "Category": "Traditional UK Shortcode",
+      "Message": "URGENT! You have won a 1 week free holiday. Text CLAIM to 87121",
+      "BERT Logits [Ham, Spam]": [
+        -0.977,
+        0.958
+      ],
+      "Logit Diff (L0 - L1)": -1.935,
+      "BERT Spam Prob (%)": 87.39,
+      "BERT Label": "SPAM",
+      "NB Spam Prob (%)": 88.17,
+      "NB Label": "SPAM"
+    },
+    {
+      "Category": "Traditional 0800 Call",
+      "Message": "Free entry in 2 a weekly competition. Call 0800123456 immediately.",
+      "BERT Logits [Ham, Spam]": [
+        -1.067,
+        1.056
+      ],
+      "Logit Diff (L0 - L1)": -2.123,
+      "BERT Spam Prob (%)": 89.32,
+      "BERT Label": "SPAM",
+      "NB Spam Prob (%)": 92.17,
+      "NB Label": "SPAM"
+    }
+  ]
+}
