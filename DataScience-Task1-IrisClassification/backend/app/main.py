@@ -116,9 +116,14 @@ def get_metrics():
 @app.get("/api/model/info", tags=["Model"])
 def get_model_info():
     service = IrisService.get_instance()
+    if not service.is_initialized:
+        service.initialize()
     return {
+        "model_name": service.model_name,
         "model_type": service.model_name,
         "features": service.feature_names,
+        "feature_names": service.feature_names,
         "classes": service.target_names,
+        "target_names": service.target_names,
         "artifact_loaded": service.is_initialized
     }
