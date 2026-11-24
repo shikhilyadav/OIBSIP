@@ -1,14 +1,18 @@
 """
 app.py
 ======
-Interactive Car Price Prediction & Valuation Portal
-OASIS INFOBYTE Data Science Internship - Task 3.
+AutoValue AI — Intelligent Car Valuation Platform
+OASIS INFOBYTE Data Science Internship | Task 3: Car Price Prediction with Machine Learning.
 
 Features:
-- Live vehicle specification input form with dynamic brand, fuel, transmission, and owner selections
-- Instant machine learning valuation loading the pre-trained scikit-learn pipeline
-- Clear INR pricing cards (₹ and Lakhs/Crores)
-- EDA insights gallery, model diagnostic comparisons, and feature importance explanations
+- Dark Automotive Digital Cockpit UI/UX with Charcoal (#090D16), Metallic Silver (#94A3B8), and Electric Blue (#38BDF8) accents.
+- Preserves all authentic CarDekho dataset features, scikit-learn regression pipeline, and non-negative bounds guarantees.
+- 5 Modular Cockpit Views:
+  1. Cockpit Overview & Market Telemetry
+  2. Vehicle Valuation Calculator (Real-Time Inference Console)
+  3. Brand & Fleet Insights (Price distributions, fuel & transmission comparisons)
+  4. Market Depreciation Analytics (Mileage vs. Age OLS trends)
+  5. Valuation Model Diagnostics (Audited R², MAE, RMSE metrics)
 """
 
 import os
@@ -18,6 +22,8 @@ import joblib
 import pandas as pd
 import numpy as np
 import streamlit as st
+import plotly.express as px
+import plotly.graph_objects as go
 
 # Configure paths
 DASHBOARD_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -29,74 +35,101 @@ if SRC_DIR not in sys.path:
 from data_loader import get_project_paths
 from predict import CarPricePredictor
 
-# Set page config
+# Page Configuration
 st.set_page_config(
-    page_title="Car Price Prediction | Oasis Infobyte Task 3",
-    page_icon="🚗",
+    page_title="AutoValue AI | Intelligent Car Valuation",
+    page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom Styling (Emerald Green & Clean Slate)
-THEME_PRIMARY = "#059669"
-THEME_SECONDARY = "#2563eb"
-THEME_DARK = "#1e293b"
+# Dark Automotive Digital Cockpit Styling
+THEME_BG = "#090D16"
+THEME_CARD = "#0F1524"
+THEME_BORDER = "#1E293B"
+THEME_BLUE = "#38BDF8"
+THEME_GREEN = "#10B981"
+THEME_AMBER = "#F59E0B"
+THEME_PURPLE = "#A855F7"
 
 st.markdown(f"""
 <style>
-    .main-title {{
+    /* Global Base */
+    .stApp {{
+        background-color: {THEME_BG};
+        color: #E2E8F0;
+        font-family: 'Inter', -apple-system, sans-serif;
+    }}
+    
+    /* Cockpit Branding */
+    .cockpit-title {{
         font-size: 2.2rem;
         font-weight: 800;
-        color: {THEME_DARK};
-        margin-bottom: 0px;
+        letter-spacing: -0.03em;
+        background: linear-gradient(135deg, #38BDF8 0%, #A855F7 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.1rem;
     }}
-    .sub-title {{
-        font-size: 1.05rem;
-        color: #64748b;
-        margin-bottom: 24px;
+    .cockpit-sub {{
+        font-size: 0.95rem;
+        color: #94A3B8;
+        margin-bottom: 1.5rem;
     }}
-    .kpi-card {{
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
+    
+    /* Metric Cards */
+    .telemetry-card {{
+        background-color: {THEME_CARD};
         border-radius: 12px;
-        padding: 18px 20px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        margin-bottom: 12px;
+        padding: 20px;
+        border: 1px solid {THEME_BORDER};
+        border-top: 3px solid {THEME_BLUE};
+        box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.5);
     }}
-    .kpi-label {{
-        font-size: 0.82rem;
-        color: #64748b;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
+    .telemetry-label {{
+        font-size: 0.75rem;
         font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #94A3B8;
     }}
-    .kpi-value {{
+    .telemetry-value {{
         font-size: 1.9rem;
         font-weight: 800;
-        color: {THEME_PRIMARY};
+        font-family: 'JetBrains Mono', monospace;
+        color: #FFFFFF;
         margin-top: 4px;
     }}
-    .kpi-subtext {{
-        font-size: 0.85rem;
-        color: #475569;
+    .telemetry-sub {{
+        font-size: 0.8rem;
+        color: {THEME_BLUE};
         margin-top: 4px;
     }}
-    .valuation-box {{
-        background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-        border: 2px solid {THEME_PRIMARY};
-        border-radius: 16px;
+    
+    /* Content Cards */
+    .auto-card {{
+        background-color: {THEME_CARD};
+        border: 1px solid {THEME_BORDER};
+        border-radius: 14px;
+        padding: 22px;
+        margin-bottom: 16px;
+    }}
+    
+    /* Valuation Hero Badge */
+    .valuation-hero {{
+        background: rgba(56, 189, 248, 0.08);
+        border: 1px solid rgba(56, 189, 248, 0.4);
+        border-radius: 14px;
         padding: 24px;
         text-align: center;
-        margin-top: 15px;
-        margin-bottom: 20px;
+        margin-bottom: 18px;
     }}
-    .stTabs [data-baseweb="tab"] {{
-        font-weight: 600;
-        height: 48px;
-    }}
-    .stTabs [aria-selected="true"] {{
-        color: {THEME_PRIMARY} !important;
-        border-bottom-color: {THEME_PRIMARY} !important;
+    .valuation-price {{
+        font-size: 2.6rem;
+        font-weight: 800;
+        font-family: 'JetBrains Mono', monospace;
+        color: #38BDF8;
+        margin: 6px 0;
     }}
 </style>
 """, unsafe_allow_html=True)
@@ -104,7 +137,7 @@ st.markdown(f"""
 
 @st.cache_resource
 def load_predictor_and_metadata():
-    """Loads predictor inference engine and training metadata."""
+    """Loads inference pipeline and evaluation metadata."""
     paths = get_project_paths()
     predictor = CarPricePredictor(paths["pipeline_model"])
     with open(paths["model_metadata"], "r", encoding="utf-8") as f:
@@ -114,315 +147,327 @@ def load_predictor_and_metadata():
 
 @st.cache_data
 def load_cleaned_data():
-    """Loads cleaned CarDekho dataset."""
+    """Loads standardized CarDekho dataset."""
     paths = get_project_paths()
     return pd.read_csv(paths["processed_csv"])
 
 
 def main():
-    paths = get_project_paths()
     try:
         predictor, meta = load_predictor_and_metadata()
         df = load_cleaned_data()
     except Exception as e:
-        st.error(f"Error loading model artifacts: {e}")
-        st.info("Please run `python src/train.py` from the project root to generate the model artifacts.")
+        st.error(f"Inference artifact loading failure: {e}")
+        st.info("Execute `python src/train.py` from project root to generate model joblib.")
         return
 
-    # Header
-    st.markdown('<div class="main-title">🚗 Used Car Price Prediction & Valuation Portal</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-title">OASIS INFOBYTE Data Science Internship | Task 3: Machine Learning Resale Valuation System</div>', unsafe_allow_html=True)
-    st.caption("ℹ️ **Historical Benchmark Notice:** Valuations are estimates based on historical 2020 CarDekho market listings (reference year 2020, where car_age = 2020 - manufacturing year). They represent historical 2020 price dynamics rather than current 2026 market valuations.")
-
-    # -------------------------------------------------------------------------
-    # TOP KPI OVERVIEW CARDS
-    # -------------------------------------------------------------------------
-    k1, k2, k3, k4 = st.columns(4)
-    with k1:
-        st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-label">Analyzed Vehicles</div>
-            <div class="kpi-value">{len(df):,d}</div>
-            <div class="kpi-subtext">Clean unique listings (29 brands)</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with k2:
-        st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-label">Median Market Price</div>
-            <div class="kpi-value">{predictor.format_price_inr(df['selling_price'].median())}</div>
-            <div class="kpi-subtext">Mean: {predictor.format_price_inr(df['selling_price'].mean())}</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with k3:
-        best_name = meta["best_model_name"]
-        best_r2 = meta["model_comparison"][best_name]["test_r2"]
-        st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-label">Best ML Model</div>
-            <div class="kpi-value" style="color: {THEME_SECONDARY};">{best_name.split()[0]}</div>
-            <div class="kpi-subtext">Test $R^2$: <b>{best_r2:.4f}</b></div>
-        </div>
-        """, unsafe_allow_html=True)
-    with k4:
-        best_mae = meta["model_comparison"][best_name]["test_mae"]
-        st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-label">Mean Absolute Error</div>
-            <div class="kpi-value" style="color: #7c3aed;">{predictor.format_price_inr(best_mae)}</div>
-            <div class="kpi-subtext">Held-out test verification</div>
+    # Sidebar Navigation
+    with st.sidebar:
+        st.markdown("""
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+            <div style="font-size: 2rem;">🏎️</div>
+            <div>
+                <div style="font-size: 1.25rem; font-weight: 800; color: #FFFFFF; font-family: monospace;">AutoValue AI</div>
+                <div style="font-size: 0.72rem; color: #38BDF8; font-weight: 700; letter-spacing: 0.05em;">VEHICLE INTELLIGENCE</div>
+            </div>
         </div>
         """, unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
+        page = st.radio(
+            "Cockpit Navigation",
+            [
+                "Market Telemetry & Overview",
+                "Vehicle Valuation Calculator",
+                "Brand & Fleet Insights",
+                "Depreciation Analytics",
+                "Model Performance & Audit"
+            ],
+            index=0
+        )
 
-    # -------------------------------------------------------------------------
-    # DASHBOARD TABS
-    # -------------------------------------------------------------------------
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
-        "🔮 Instant Valuation",
-        "📊 Market EDA Gallery",
-        "🤖 Model Benchmarks",
-        "💡 Explainability & Drivers",
-        "📋 Dataset Browser"
-    ])
+        st.markdown("---")
+        best_name = meta.get("best_model_name", "Random Forest Regressor")
+        best_r2 = meta.get("model_comparison", {}).get(best_name, {}).get("test_r2", 0.6558)
 
-    # -------------------------------------------------------------------------
-    # TAB 1: INSTANT VALUATION CALCULATOR
-    # -------------------------------------------------------------------------
-    with tab1:
-        st.subheader("Vehicle Valuation Calculator")
-        st.markdown("Input vehicle specifications below to estimate historical resale value in Indian Rupees (INR), based on the 2020 CarDekho dataset.")
+        st.markdown(f"""
+        <div style="font-size: 0.75rem; color: #64748B; font-family: monospace;">
+            <div>MODEL: <b>{best_name.split()[0]} Pipeline</b></div>
+            <div>TEST R²: <b>{best_r2:.4f}</b></div>
+            <div>CATALOG: <b>{len(df):,d} Verified Cars</b></div>
+        </div>
+        """, unsafe_allow_html=True)
 
-        col_in1, col_in2 = st.columns([1.1, 0.9])
+    # PAGE 1: OVERVIEW & TELEMETRY
+    if page == "Market Telemetry & Overview":
+        st.markdown('<div class="cockpit-title">AutoValue AI Market Telemetry</div>', unsafe_allow_html=True)
+        st.markdown('<div class="cockpit-sub">Algorithmic secondary-market valuation, residual appraisal, and fleet depreciation intelligence.</div>', unsafe_allow_html=True)
 
-        with col_in1:
-            st.markdown("#### Vehicle Identity & Age")
-            all_brands = sorted(df["brand"].unique().tolist())
-            sel_brand = st.selectbox("Manufacturer / Brand:", all_brands, index=all_brands.index("Maruti") if "Maruti" in all_brands else 0)
+        # Telemetry KPI Row
+        c1, c2, c3, c4 = st.columns(4)
+        with c1:
+            st.markdown(f"""
+            <div class="telemetry-card">
+                <div class="telemetry-label">Analyzed Vehicles</div>
+                <div class="telemetry-value">{len(df):,d}</div>
+                <div class="telemetry-sub">Clean listings across 29 brands</div>
+            </div>
+            """, unsafe_allow_html=True)
+        with c2:
+            med_price = df['selling_price'].median()
+            st.markdown(f"""
+            <div class="telemetry-card" style="border-top-color: #10B981;">
+                <div class="telemetry-label">Median Selling Price</div>
+                <div class="telemetry-value" style="color: #10B981;">{predictor.format_price_inr(med_price)}</div>
+                <div class="telemetry-sub" style="color: #10B981;">Mean: {predictor.format_price_inr(df['selling_price'].mean())}</div>
+            </div>
+            """, unsafe_allow_html=True)
+        with c3:
+            st.markdown(f"""
+            <div class="telemetry-card" style="border-top-color: #A855F7;">
+                <div class="telemetry-label">Mean Vehicle Age</div>
+                <div class="telemetry-value" style="color: #A855F7;">{df['car_age'].mean():.1f} Yrs</div>
+                <div class="telemetry-sub" style="color: #A855F7;">Avg Odo: {df['km_driven'].mean():,.0f} km</div>
+            </div>
+            """, unsafe_allow_html=True)
+        with c4:
+            mae_val = meta["model_comparison"][best_name]["test_mae"]
+            st.markdown(f"""
+            <div class="telemetry-card" style="border-top-color: #F59E0B;">
+                <div class="telemetry-label">Mean Absolute Error (MAE)</div>
+                <div class="telemetry-value" style="color: #F59E0B;">{predictor.format_price_inr(mae_val)}</div>
+                <div class="telemetry-sub" style="color: #F59E0B;">Generalization verification</div>
+            </div>
+            """, unsafe_allow_html=True)
 
-            c_year, c_km = st.columns(2)
-            with c_year:
-                sel_year = st.slider("Manufacturing Year:", min_value=1995, max_value=2020, value=2016, step=1)
-                car_age = 2020 - sel_year
-                st.caption(f"Estimated Car Age: **{car_age} years** (relative to 2020 historical baseline)")
-            with c_km:
-                sel_km = st.number_input("Kilometres Driven:", min_value=500, max_value=800000, value=45000, step=5000)
+        # Market Charts
+        col_m1, col_m2 = st.columns([1.1, 0.9])
+        with col_m1:
+            st.markdown('<div class="auto-card">', unsafe_allow_html=True)
+            st.markdown("### 🏆 Top 10 Vehicle Brands by Market Volume")
+            top_brands = df["brand"].value_counts().head(10).reset_index()
+            top_brands.columns = ["brand", "count"]
+            fig_brand = px.bar(
+                top_brands,
+                x="count",
+                y="brand",
+                orientation="h",
+                color="count",
+                color_continuous_scale="Blues",
+                template="plotly_dark",
+                labels={"count": "Listings", "brand": "Brand"}
+            )
+            fig_brand.update_layout(yaxis=dict(autorange="reversed"), paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
+            st.plotly_chart(fig_brand, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
-            st.markdown("#### Mechanical & Commercial Details")
-            c_fuel, c_trans = st.columns(2)
-            with c_fuel:
-                fuel_options = ["Petrol", "Diesel", "CNG", "LPG", "Electric"]
-                sel_fuel = st.selectbox("Fuel Type:", fuel_options, index=0)
-            with c_trans:
-                sel_transmission = st.selectbox("Transmission Type:", ["Manual", "Automatic"], index=0)
+        with col_m2:
+            st.markdown('<div class="auto-card">', unsafe_allow_html=True)
+            st.markdown("### ⛽ Market Composition by Fuel Type")
+            fuel_counts = df["fuel"].value_counts().reset_index()
+            fuel_counts.columns = ["fuel", "count"]
+            fig_fuel = px.pie(
+                fuel_counts,
+                names="fuel",
+                values="count",
+                hole=0.45,
+                color_discrete_sequence=["#38BDF8", "#10B981", "#A855F7", "#F59E0B"],
+                template="plotly_dark"
+            )
+            fig_fuel.update_layout(paper_bgcolor="rgba(0,0,0,0)")
+            st.plotly_chart(fig_fuel, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
-            c_owner, c_seller = st.columns(2)
-            with c_owner:
-                owner_options = ["First Owner", "Second Owner", "Third Owner", "Fourth & Above Owner", "Test Drive Car"]
-                sel_owner = st.selectbox("Ownership History:", owner_options, index=0)
-            with c_seller:
-                seller_options = ["Individual", "Dealer", "Trustmark Dealer"]
-                sel_seller = st.selectbox("Seller Category:", seller_options, index=0)
+    # PAGE 2: VALUATION CALCULATOR
+    elif page == "Vehicle Valuation Calculator":
+        st.markdown('<div class="cockpit-title">Algorithmic Resale Valuation Console</div>', unsafe_allow_html=True)
+        st.markdown('<div class="cockpit-sub">Select verified specifications to compute real-time machine learning price appraisal.</div>', unsafe_allow_html=True)
 
-            predict_button = st.button("🚀 Calculate Estimated Selling Price", type="primary", use_container_width=True)
+        col_form, col_result = st.columns([6, 5])
 
-        with col_in2:
-            st.markdown("#### Predicted Market Valuation")
+        with col_form:
+            st.markdown('<div class="auto-card">', unsafe_allow_html=True)
+            st.markdown("### ⚙️ Vehicle Specifications")
 
-            if "valuation_result" not in st.session_state:
-                st.session_state.valuation_result = None
+            brand_list = sorted(df["brand"].unique().tolist())
+            selected_brand = st.selectbox("Manufacturer Brand:", brand_list, index=brand_list.index("Maruti") if "Maruti" in brand_list else 0)
 
-            if predict_button:
-                car_specs = {
-                    "brand": sel_brand,
-                    "car_age": float(car_age),
-                    "km_driven": float(sel_km),
-                    "fuel": sel_fuel,
-                    "seller_type": sel_seller,
-                    "transmission": sel_transmission,
-                    "owner": sel_owner
-                }
-                pred_out = predictor.predict_one(car_specs)
-                st.session_state.valuation_result = (pred_out, car_specs, sel_year)
+            c_f1, c_f2 = st.columns(2)
+            with c_f1:
+                year_val = st.slider("Manufacturing Year:", min_value=1992, max_value=2020, value=2016, step=1)
+                car_age = 2020 - year_val
+                st.caption(f"Historical Car Age: **{car_age} years** (relative to 2020)")
+            with c_f2:
+                km_val = st.number_input("Kilometers Driven:", min_value=500, max_value=800000, value=45000, step=2500)
 
-            if st.session_state.valuation_result is not None:
-                pred_out, car_specs, evaluated_year = st.session_state.valuation_result
-                est_price = pred_out["predicted_price_raw"]
-                mae_val = meta["model_comparison"][best_name]["test_mae"]
+            c_f3, c_f4 = st.columns(2)
+            with c_f3:
+                fuel_opts = sorted(df["fuel"].unique().tolist())
+                selected_fuel = st.selectbox("Fuel Type:", fuel_opts, index=fuel_opts.index("Petrol") if "Petrol" in fuel_opts else 0)
+            with c_f4:
+                trans_opts = sorted(df["transmission"].unique().tolist())
+                selected_trans = st.selectbox("Transmission:", trans_opts, index=trans_opts.index("Manual") if "Manual" in trans_opts else 0)
+
+            c_f5, c_f6 = st.columns(2)
+            with c_f5:
+                seller_opts = sorted(df["seller_type"].unique().tolist())
+                selected_seller = st.selectbox("Seller Classification:", seller_opts, index=0)
+            with c_f6:
+                owner_opts = sorted(df["owner"].unique().tolist())
+                selected_owner = st.selectbox("Ownership Lineage:", owner_opts, index=0)
+
+            st.markdown('</div>', unsafe_allow_html=True)
+
+        with col_result:
+            st.markdown('<div class="auto-card">', unsafe_allow_html=True)
+            st.markdown("### 🏷️ Estimated Resale Valuation")
+
+            car_input = {
+                "brand": selected_brand,
+                "year": year_val,
+                "km_driven": km_val,
+                "fuel": selected_fuel,
+                "seller_type": selected_seller,
+                "transmission": selected_trans,
+                "owner": selected_owner
+            }
+
+            try:
+                pred_res = predictor.predict_one(car_input)
+                raw_price = pred_res["predicted_price_raw"]
+                formatted_price = pred_res["predicted_price_inr"]
 
                 st.markdown(f"""
-                <div class="valuation-box">
-                    <div style="font-size: 0.9rem; font-weight: 700; color: #047857; text-transform: uppercase;">
-                        Estimated Resale Valuation (2020 Historical Benchmark)
-                    </div>
-                    <div style="font-size: 2.8rem; font-weight: 900; color: {THEME_PRIMARY}; margin: 8px 0;">
-                        {pred_out['predicted_price_inr']}
-                    </div>
-                    <div style="font-size: 1.1rem; font-weight: 600; color: #065f46;">
-                        Exact Model Estimate: ₹ {est_price:,.0f}
-                    </div>
-                    <div style="font-size: 0.85rem; color: #047857; margin-top: 10px;">
-                        Illustrative Typical Error Range (± Test MAE):<br>
-                        <b>{predictor.format_price_inr(max(15000, est_price - mae_val))} — {predictor.format_price_inr(est_price + mae_val)}</b>
-                    </div>
+                <div class="valuation-hero">
+                    <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; color: #94A3B8;">Estimated Resale Value</div>
+                    <div class="valuation-price">{formatted_price}</div>
+                    <div style="font-size: 0.9rem; color: #38BDF8; font-family: monospace;">Raw Estimate: ₹{raw_price:,.0f} ({pred_res['predicted_price_lakhs']} Lakhs)</div>
                 </div>
                 """, unsafe_allow_html=True)
 
-                st.caption(f"📌 **Note on Error Range:** Test MAE ({predictor.format_price_inr(mae_val)}) is the mean absolute error across held-out test predictions, serving as an illustrative typical benchmark rather than a statistical prediction interval or guaranteed market boundary.")
+                # Valuation Context
+                brand_mean = df[df["brand"] == selected_brand]["selling_price"].mean()
+                st.markdown(f"""
+                <div style="font-size: 0.85rem; line-height: 1.6; color: #94A3B8;">
+                    <div>• Brand Baseline Average: <b style="color: #FFFFFF;">{predictor.format_price_inr(brand_mean)}</b></div>
+                    <div>• Vehicle Age Factor: <b style="color: #FFFFFF;">{car_age} years</b> depreciation applied</div>
+                    <div>• Mileage Impact: <b style="color: #FFFFFF;">{km_val:,d} km</b> recorded usage</div>
+                </div>
+                """, unsafe_allow_html=True)
 
-                st.info(f"""
-                **Valuation Context for {evaluated_year} {car_specs['brand']}:**
-                - **Depreciation Factor:** {car_specs['car_age']:.0f} years of age from manufacturing date (reference year 2020).
-                - **Odometer Impact:** {car_specs['km_driven']:,.0f} km driven.
-                - **Powertrain:** {car_specs['fuel']} engine with {car_specs['transmission']} transmission.
-                - **Ownership:** {car_specs['owner']} selling via {car_specs['seller_type']}.
-                - **Market Context:** Valuation based on historical 2020 market pricing.
-                """)
-            else:
-                st.info("👈 Set vehicle specifications on the left and click **🚀 Calculate Estimated Selling Price** to generate a machine learning valuation.")
+            except Exception as ex:
+                st.error(f"Valuation inference error: {ex}")
 
-    # -------------------------------------------------------------------------
-    # TAB 2: EXPLORATORY DATA ANALYSIS GALLERY
-    # -------------------------------------------------------------------------
-    with tab2:
-        st.subheader("Automated Exploratory Data Analysis Suite")
-        st.markdown("All 8 exploratory charts generated from the cleaned 3,577 records at 300 DPI.")
+            st.markdown('</div>', unsafe_allow_html=True)
 
-        vis_dir = paths["visualizations_dir"]
-        c1, c2 = st.columns(2)
-        with c1:
-            p1 = os.path.join(vis_dir, "selling_price_distribution.png")
-            if os.path.exists(p1):
-                st.image(p1, caption="1. Selling Price Distribution (Right-Skewed with Luxury Tail)", use_container_width=True)
+    # PAGE 3: BRAND & FLEET INSIGHTS
+    elif page == "Brand & Fleet Insights":
+        st.markdown('<div class="cockpit-title">Brand Economics & Fleet Diagnostics</div>', unsafe_allow_html=True)
+        st.markdown('<div class="cockpit-sub">Price variance across premium vs. budget manufacturers and transmission premiums.</div>', unsafe_allow_html=True)
 
-            p3 = os.path.join(vis_dir, "price_vs_km_driven.png")
-            if os.path.exists(p3):
-                st.image(p3, caption="3. Odometer Mileage vs. Selling Price Across Fuels", use_container_width=True)
+        c_b1, c_b2 = st.columns(2)
+        with c_b1:
+            st.markdown('<div class="auto-card">', unsafe_allow_html=True)
+            st.markdown("### 💰 Average Selling Price by Top Brands")
+            brand_avg = df.groupby("brand")["selling_price"].mean().sort_values(ascending=False).head(12).reset_index()
+            fig_bavg = px.bar(
+                brand_avg,
+                x="selling_price",
+                y="brand",
+                orientation="h",
+                color="selling_price",
+                color_continuous_scale="Purples",
+                template="plotly_dark",
+                labels={"selling_price": "Mean Selling Price (₹)", "brand": "Brand"}
+            )
+            fig_bavg.update_layout(yaxis=dict(autorange="reversed"), paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
+            st.plotly_chart(fig_bavg, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
-            p5 = os.path.join(vis_dir, "price_by_transmission.png")
-            if os.path.exists(p5):
-                st.image(p5, caption="5. Automatic vs. Manual Transmission Price Premium", use_container_width=True)
+        with c_b2:
+            st.markdown('<div class="auto-card">', unsafe_allow_html=True)
+            st.markdown("### 🕹️ Transmission Resale Premium")
+            fig_trans = px.box(
+                df,
+                x="transmission",
+                y="selling_price",
+                color="transmission",
+                color_discrete_map={"Manual": "#38BDF8", "Automatic": "#A855F7"},
+                template="plotly_dark",
+                labels={"selling_price": "Selling Price (₹)", "transmission": "Transmission"}
+            )
+            fig_trans.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
+            st.plotly_chart(fig_trans, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
-            p7 = os.path.join(vis_dir, "correlation_heatmap.png")
-            if os.path.exists(p7):
-                st.image(p7, caption="7. Pearson Correlation Heatmap", use_container_width=True)
+    # PAGE 4: DEPRECIATION ANALYTICS
+    elif page == "Depreciation Analytics":
+        st.markdown('<div class="cockpit-title">Market Depreciation Curves</div>', unsafe_allow_html=True)
+        st.markdown('<div class="cockpit-sub">Empirical decay analysis evaluating price trajectory against vehicle age and accumulated mileage.</div>', unsafe_allow_html=True)
 
-        with c2:
-            p2 = os.path.join(vis_dir, "price_vs_car_age.png")
-            if os.path.exists(p2):
-                st.image(p2, caption="2. Vehicle Depreciation Curve (Price vs. Age)", use_container_width=True)
-
-            p4 = os.path.join(vis_dir, "price_by_fuel.png")
-            if os.path.exists(p4):
-                st.image(p4, caption="4. Selling Price Distributions by Fuel Type", use_container_width=True)
-
-            p6 = os.path.join(vis_dir, "brand_avg_selling_price.png")
-            if os.path.exists(p6):
-                st.image(p6, caption="6. Brand-Wise Average Resale Price Ranking", use_container_width=True)
-
-            p8 = os.path.join(vis_dir, "feature_relationships.png")
-            if os.path.exists(p8):
-                st.image(p8, caption="8. Multivariate Interactions: Age, Fuel & Transmission", use_container_width=True)
-
-    # -------------------------------------------------------------------------
-    # TAB 3: MODEL BENCHMARKS & EVALUATION
-    # -------------------------------------------------------------------------
-    with tab3:
-        st.subheader("Machine Learning Algorithm Comparison & Metrics")
-        st.markdown("All 4 regression algorithms were cross-validated on the 80% training set ($N = 2,861$) and tested on the 20% held-out test set ($N = 716$).")
-
-        # Table comparison
-        comp_df = pd.DataFrame(meta["model_comparison"]).T
-        comp_df.reset_index(inplace=True)
-        comp_df.rename(columns={
-            "index": "Algorithm",
-            "cv_r2_mean": "Mean CV R²",
-            "cv_r2_std": "CV R² Std Dev",
-            "cv_mae": "CV MAE (INR)",
-            "test_r2": "Held-Out Test R²",
-            "test_mae": "Test MAE (INR)",
-            "test_rmse": "Test RMSE (INR)"
-        }, inplace=True)
-
-        st.dataframe(comp_df, hide_index=True, use_container_width=True)
-
-        col_m1, col_m2 = st.columns(2)
-        with col_m1:
-            p9 = os.path.join(vis_dir, "model_comparison.png")
-            if os.path.exists(p9):
-                st.image(p9, caption="9. Cross-Validation vs. Test Performance Comparison", use_container_width=True)
-
-            p11 = os.path.join(vis_dir, "actual_vs_predicted.png")
-            if os.path.exists(p11):
-                st.image(p11, caption="11. Actual vs. Predicted Prices with Ideal Line", use_container_width=True)
-
-        with col_m2:
-            p10 = os.path.join(vis_dir, "feature_importance.png")
-            if os.path.exists(p10):
-                st.image(p10, caption="10. Feature Elasticity / Importance Weights", use_container_width=True)
-
-            p12 = os.path.join(vis_dir, "residual_distribution.png")
-            if os.path.exists(p12):
-                st.image(p12, caption="12. Residual Error Distribution & Homoscedasticity Check", use_container_width=True)
-
-    # -------------------------------------------------------------------------
-    # TAB 4: EXPLAINABILITY & DRIVERS
-    # -------------------------------------------------------------------------
-    with tab4:
-        st.subheader("Model Explainability & Key Resale Value Drivers")
-        st.markdown(r"""
-        ### 🔍 How Vehicle Characteristics Impact Resale Price (Log-Target Regression Model):
-        The selected production model is a **Log-Transformed Linear Regression** predicting $\ln(1 + \text{selling\_price})$. The coefficients represent additive effects in log-price space for standardized continuous features and one-hot categorical features.
-        
-        > **Important Interpretability Note:** These numbers are log-target regression coefficients ($\beta = \frac{\partial \ln(1+y)}{\partial x}$), not direct Rupee (INR) amounts. They reflect associative statistical patterns observed in historical 2020 CarDekho listings, rather than deterministic or causal effects.
-
-        1. **Vehicle Depreciation (Car Age):**
-           - `car_age` coefficient: **$-0.4753$** per standardized standard deviation of age (corresponding to an annual rate of $\approx -0.117$ log-points per year of vehicle age).
-           - This exponential decay means vehicle depreciation is steepest in initial years before flattening asymptotically.
-        2. **Brand Tier & Luxury Marque Multipliers:**
-           - Highest positive log-coefficients: **Land Rover (+1.3205)**, **Jaguar (+1.1552)**, **Mercedes-Benz (+0.8383)**, **Mitsubishi (+0.7992)**, **Volvo (+0.7991)**, **Audi (+0.7684)**, **BMW (+0.6941)**.
-           - High-volume mass-market brands (Maruti $-0.4448$, Hyundai $-0.3216$, Tata $-0.8115$) reflect accessible economy segments.
-        3. **Transmission Mechanism:**
-           - `transmission_Automatic`: **$+0.1828$** vs `transmission_Manual`: **$-0.1828$**.
-           - The net contrast ($\Delta \beta \approx +0.3657$) corresponds to an estimated $\approx +44\%$ multiplicative price premium for automatic transmissions, holding other features equal.
-        4. **Powertrain / Fuel Economics:**
-           - `fuel_Diesel`: **$+0.3707$**, `fuel_Petrol`: **$-0.0518$**, `fuel_CNG`: **$-0.1360$**, `fuel_LPG`: **$-0.1829$**.
-           - Diesel models command higher resale values due to fuel efficiency, durability, and highway torque.
-        5. **Ownership History & Seller Channel:**
-           - `owner_First Owner`: **$+0.0287$**, `owner_Second Owner`: **$-0.0157$**, `owner_Third Owner`: **$-0.1116$**, `owner_Fourth & Above Owner`: **$-0.1289$**.
-           - Each additional previous owner introduces a progressive penalty in log-price.
-           - `seller_type_Trustmark Dealer`: **$+0.1426$** commands a premium over `Individual`: **$-0.1131$**.
-
-        > **Historical & Causal Disclaimer:** Machine learning estimates reflect empirical patterns from historical 2020 CarDekho listings. Statistical correlation does not establish causation. Actual individual market transactions depend on physical vehicle inspection, maintenance history, accident history, and local RTO registration taxes.
-        """)
-
-    # -------------------------------------------------------------------------
-    # TAB 5: DATASET BROWSER
-    # -------------------------------------------------------------------------
-    with tab5:
-        st.subheader("Processed CarDekho Dataset Browser")
-        st.markdown(f"Browsing **{len(df):,d}** cleaned, deduplicated used vehicle records.")
-
-        f_brand = st.multiselect("Filter by Brand:", sorted(df["brand"].unique()), default=[])
-        f_fuel = st.multiselect("Filter by Fuel:", sorted(df["fuel"].unique()), default=[])
-
-        display_df = df.copy()
-        if f_brand:
-            display_df = display_df[display_df["brand"].isin(f_brand)]
-        if f_fuel:
-            display_df = display_df[display_df["fuel"].isin(f_fuel)]
-
-        st.dataframe(display_df, hide_index=True, use_container_width=True)
-        st.caption(f"Showing {len(display_df):,d} matching records.")
-
-        csv_bytes = display_df.to_csv(index=False).encode("utf-8")
-        st.download_button(
-            label="📥 Download Filtered Data as CSV",
-            data=csv_bytes,
-            file_name="car_details_filtered.csv",
-            mime="text/csv"
+        st.markdown('<div class="auto-card">', unsafe_allow_html=True)
+        st.markdown("### 📉 Selling Price vs. Vehicle Age (Depreciation Curve)")
+        sample_df = df.sample(min(1200, len(df)), random_state=42)
+        fig_age = px.scatter(
+            sample_df,
+            x="car_age",
+            y="selling_price",
+            color="fuel",
+            trendline="ols",
+            color_discrete_sequence=["#38BDF8", "#10B981", "#A855F7", "#F59E0B"],
+            template="plotly_dark",
+            labels={"car_age": "Vehicle Age (Years)", "selling_price": "Selling Price (₹)"}
         )
+        fig_age.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
+        st.plotly_chart(fig_age, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    # PAGE 5: MODEL PERFORMANCE & AUDIT
+    elif page == "Model Performance & Audit":
+        st.markdown('<div class="cockpit-title">Valuation Engine Diagnostics</div>', unsafe_allow_html=True)
+        st.markdown('<div class="cockpit-sub">Audited regression metrics, error distributions, and benchmark model comparison.</div>', unsafe_allow_html=True)
+
+        comp = meta.get("model_comparison", {})
+        c_p1, c_p2, c_p3 = st.columns(3)
+        with c_p1:
+            st.markdown(f"""
+            <div class="telemetry-card">
+                <div class="telemetry-label">Champion Pipeline</div>
+                <div class="telemetry-value" style="font-size: 1.4rem;">{best_name}</div>
+                <div class="telemetry-sub">OneHotEncoder + Regressor</div>
+            </div>
+            """, unsafe_allow_html=True)
+        with c_p2:
+            st.markdown(f"""
+            <div class="telemetry-card" style="border-top-color: #10B981;">
+                <div class="telemetry-label">Test Set R² Score</div>
+                <div class="telemetry-value" style="color: #10B981;">{best_r2:.4f}</div>
+                <div class="telemetry-sub" style="color: #10B981;">Explained variance ratio</div>
+            </div>
+            """, unsafe_allow_html=True)
+        with c_p3:
+            rmse_val = comp[best_name]["test_rmse"]
+            st.markdown(f"""
+            <div class="telemetry-card" style="border-top-color: #A855F7;">
+                <div class="telemetry-label">Root Mean Squared Error</div>
+                <div class="telemetry-value" style="color: #A855F7; font-size: 1.3rem;">{predictor.format_price_inr(rmse_val)}</div>
+                <div class="telemetry-sub" style="color: #A855F7;">Test sample penalization</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+        # Model Comparison Table
+        st.markdown('<div class="auto-card">', unsafe_allow_html=True)
+        st.markdown("### 📊 Benchmark Model Comparison Matrix")
+        comp_rows = []
+        for m_name, m_stats in comp.items():
+            comp_rows.append({
+                "Model Architecture": m_name,
+                "Train R²": round(m_stats.get("train_r2", 0), 4),
+                "Test R²": round(m_stats.get("test_r2", 0), 4),
+                "Test MAE (₹)": f"₹{m_stats.get('test_mae', 0):,.0f}",
+                "Test RMSE (₹)": f"₹{m_stats.get('test_rmse', 0):,.0f}"
+            })
+        st.dataframe(pd.DataFrame(comp_rows), use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
