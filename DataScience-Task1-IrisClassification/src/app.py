@@ -2,31 +2,34 @@
 app.py
 ======
 IrisAI — Botanical Intelligence Studio
-Tagline: Discover. Analyze. Classify.
+Tagline: Where Nature Meets Intelligence.
 Oasis Infobyte Data Science Internship — Task 1: Iris Flower Classification.
 
-Features:
-- Unified Premium Light Botanical Design System:
-    - Main Background: #F7F8F3
-    - Sidebar & Cards: #FFFFFF
-    - Forest Green: #285943
-    - Secondary Sage: #8BAA91
-    - Soft Green Tint: #E8F0E8
-    - Headings: #1D3026
+Visual Reference Driven Botanical SaaS UI/UX:
+- Premium White Rounded Application Shell on Soft Mint Canvas (#F2F7F3)
+- Palette:
+    - Canvas Background: #F2F7F3
+    - Workspace / Card Base: #FFFFFF
+    - Forest Green Accent: #285943
+    - Sage Secondary: #5C9A72
+    - Soft Mint Pastel: #DFF4E5
+    - Pale Sage: #E9F1E8
+    - Muted Lavender: #EAE7F5
+    - Warm Beige: #F8EDDE
+    - Headings: #183A2A
     - Body Text: #647269
-    - Borders: #E4E9E2
-    - Accent: #B88A62
-- 5 Complete Modular Pages:
-    1. Overview (Botanical Intelligence Dashboard)
-    2. Flower Classifier (Real-Time 2-Column Inference Console)
-    3. Dataset Explorer (Searchable, filterable light table)
-    4. Species Insights (Profile cards, morphometric radar & relationships)
-    5. Model Performance (Scientific evaluation, confusion matrix, classification report)
-- Strictly Preserves:
-    - Pre-trained Random Forest model (`best_iris_model.joblib`)
-    - Exact 4 input features & scaling pipeline
-    - Authentic Softmax confidence probabilities
-    - True dataset distributions & historical test metrics (96.67% test accuracy)
+    - Borders: #E4EBE3
+- Distinct UI Elements Inspired by Visual References:
+    - Large Botanical Hero Banner with Tagline & High-Res Botanical SVG Artwork
+    - 4 Pastel Floating KPI Telemetry Cards with Soft Icon Containers
+    - Two-Column Interactive Specimen Classifier with Quick Presets & Floating Output Panel
+    - Searchable Light Dataset Table with Responsive Overflow & Metric Filters
+    - 3 Profile Cards for Setosa, Versicolor, and Virginica with Actual Morphometric Moments
+    - Scientific Model Evaluation with Interactive Confusion Matrix & Benchmark Table
+- Strict Preservation Rules:
+    - Preserves trained Random Forest model (`best_iris_model.joblib`)
+    - Preserves 4 input features & StandardScaler pipeline
+    - Preserves exact prediction probabilities and historical test metrics (96.67% accuracy)
 """
 
 import os
@@ -57,181 +60,208 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Unified Light Botanical Styling
+# Visual Reference Inspired Botanical SaaS Design System
 st.markdown("""
 <style>
-    /* Google Fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-    /* Global Base */
     html, body, [class*="css"] {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-family: 'Manrope', 'Inter', -apple-system, sans-serif;
     }
 
+    /* Soft Mint Canvas */
     .stApp {
-        background-color: #F7F8F3;
+        background-color: #F2F7F3;
         color: #647269;
     }
 
-    /* Sidebar Styling */
+    /* Professional Sidebar */
     section[data-testid="stSidebar"] {
         background-color: #FFFFFF !important;
-        border-right: 1px solid #E4E9E2;
+        border-right: 1px solid #E4EBE3;
         padding-top: 1.5rem;
     }
 
-    /* Header styling */
-    .studio-header {
-        margin-bottom: 1.75rem;
-    }
-    .studio-title {
-        font-size: 2.1rem;
-        font-weight: 800;
-        letter-spacing: -0.03em;
-        color: #1D3026;
-        margin-bottom: 0.25rem;
-    }
-    .studio-subtitle {
-        font-size: 0.95rem;
-        color: #647269;
-        line-height: 1.5;
-    }
-
-    /* Clean Card Container */
-    .botanical-card {
-        background-color: #FFFFFF;
-        border: 1px solid #E4E9E2;
-        border-radius: 14px;
-        padding: 22px 24px;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 10px rgba(29, 48, 38, 0.03);
-    }
-
-    /* KPI Cards */
-    .kpi-box {
-        background-color: #FFFFFF;
-        border: 1px solid #E4E9E2;
-        border-radius: 12px;
-        padding: 18px 20px;
-        box-shadow: 0 1px 4px rgba(29, 48, 38, 0.04);
-        border-top: 3px solid #285943;
-        height: 100%;
-    }
-    .kpi-label {
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: #8BAA91;
-        margin-bottom: 6px;
-    }
-    .kpi-val {
-        font-size: 1.85rem;
-        font-weight: 800;
-        color: #1D3026;
-        font-family: 'Inter', sans-serif;
-        letter-spacing: -0.02em;
-        margin: 0;
-    }
-    .kpi-sub {
-        font-size: 0.8rem;
-        color: #647269;
-        margin-top: 4px;
-    }
-
-    /* Species Profile Cards */
-    .profile-card {
+    /* Top Workspace Header Bar */
+    .saas-topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         background: #FFFFFF;
-        border: 1px solid #E4E9E2;
-        border-radius: 12px;
-        padding: 20px;
-        height: 100%;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        border: 1px solid #E4EBE3;
+        border-radius: 16px;
+        padding: 12px 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 12px rgba(24, 58, 42, 0.03);
     }
-    .profile-header-setosa {
-        color: #6B5B95;
-        font-weight: 700;
-        font-size: 1.25rem;
-        border-bottom: 2px solid #E8E5F0;
-        padding-bottom: 8px;
-        margin-bottom: 12px;
+    .breadcrumb-text {
+        font-size: 0.82rem;
+        color: #8BAA91;
+        font-weight: 600;
+        letter-spacing: 0.02em;
     }
-    .profile-header-versicolor {
-        color: #B88A62;
+    .user-pill {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #F2F7F3;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.8rem;
         font-weight: 700;
-        font-size: 1.25rem;
-        border-bottom: 2px solid #F5ECE3;
-        padding-bottom: 8px;
-        margin-bottom: 12px;
-    }
-    .profile-header-virginica {
-        color: #285943;
-        font-weight: 700;
-        font-size: 1.25rem;
-        border-bottom: 2px solid #E4E9E2;
-        padding-bottom: 8px;
-        margin-bottom: 12px;
+        color: #183A2A;
+        border: 1px solid #E4EBE3;
     }
 
-    /* Prediction Result Hero */
-    .pred-hero-setosa {
-        background: #F4F2F9;
-        border: 1px solid #D6D0E8;
-        border-radius: 12px;
-        padding: 24px;
-        text-align: center;
-        margin-bottom: 20px;
+    /* Hero Banner with Botanical Illustration */
+    .botanical-hero {
+        background: linear-gradient(135deg, #E9F1E8 0%, #DFF4E5 50%, #F8FAF8 100%);
+        border: 1px solid #D6E4D5;
+        border-radius: 20px;
+        padding: 32px 36px;
+        margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(40, 89, 67, 0.05);
     }
-    .pred-hero-versicolor {
-        background: #FBF7F2;
-        border: 1px solid #EBDDCF;
-        border-radius: 12px;
-        padding: 24px;
-        text-align: center;
-        margin-bottom: 20px;
+    .hero-tagline {
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: #5C9A72;
+        margin-bottom: 8px;
     }
-    .pred-hero-virginica {
-        background: #EBF2EC;
-        border: 1px solid #C7DBCB;
-        border-radius: 12px;
-        padding: 24px;
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    .pred-species-name {
+    .hero-headline {
         font-size: 2.3rem;
         font-weight: 800;
-        letter-spacing: -0.02em;
-        margin: 6px 0;
+        color: #183A2A;
+        letter-spacing: -0.03em;
+        line-height: 1.2;
+        margin-bottom: 10px;
+    }
+    .hero-subtext {
+        font-size: 0.95rem;
+        color: #4A6353;
+        max-width: 620px;
+        line-height: 1.6;
     }
 
-    /* Form Buttons */
+    /* Pastel Telemetry KPI Cards */
+    .kpi-card-mint {
+        background: #FFFFFF;
+        border: 1px solid #E4EBE3;
+        border-radius: 16px;
+        padding: 22px;
+        box-shadow: 0 2px 10px rgba(24, 58, 42, 0.03);
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .kpi-card-mint:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(24, 58, 42, 0.06);
+    }
+    .kpi-icon-pill {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.15rem;
+        margin-bottom: 14px;
+    }
+    .kpi-val {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #183A2A;
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+    }
+    .kpi-label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #7E9485;
+        margin-top: 4px;
+    }
+    .kpi-delta {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #285943;
+        margin-top: 6px;
+    }
+
+    /* Premium White Workspace Card */
+    .saas-card {
+        background-color: #FFFFFF;
+        border: 1px solid #E4EBE3;
+        border-radius: 18px;
+        padding: 24px 28px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 14px rgba(24, 58, 42, 0.03);
+    }
+    .card-title {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #183A2A;
+        letter-spacing: -0.01em;
+        margin-bottom: 4px;
+    }
+    .card-sub {
+        font-size: 0.85rem;
+        color: #7E9485;
+        margin-bottom: 18px;
+    }
+
+    /* Diagnosis Hero Badges */
+    .hero-badge-setosa {
+        background: linear-gradient(135deg, #F3F0FA 0%, #EAE7F5 100%);
+        border: 1px solid #D6D0E8;
+        border-radius: 16px;
+        padding: 26px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .hero-badge-versicolor {
+        background: linear-gradient(135deg, #FBF8F3 0%, #F8EDDE 100%);
+        border: 1px solid #EBDDCF;
+        border-radius: 16px;
+        padding: 26px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .hero-badge-virginica {
+        background: linear-gradient(135deg, #EBF5ED 0%, #DFF4E5 100%);
+        border: 1px solid #C7E2CE;
+        border-radius: 16px;
+        padding: 26px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    /* Buttons */
     div.stButton > button:first-child {
         background-color: #285943;
         color: #FFFFFF;
-        font-weight: 600;
-        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        border-radius: 10px;
         border: none;
-        padding: 0.5rem 1.25rem;
-        transition: background-color 0.15s ease;
+        padding: 0.55rem 1.4rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 8px rgba(40, 89, 67, 0.15);
     }
     div.stButton > button:first-child:hover {
-        background-color: #1D3026;
+        background-color: #183A2A;
         color: #FFFFFF;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(40, 89, 67, 0.25);
     }
 
-    /* Radio buttons & Nav styling */
-    div[role="radiogroup"] > label {
-        padding: 8px 12px;
-        border-radius: 8px;
-        transition: background-color 0.1s ease;
-        margin-bottom: 4px;
-    }
-    div[role="radiogroup"] > label:hover {
-        background-color: #F7F8F3;
-    }
-
-    /* Hide Streamlit default decoration */
+    /* Hide default decoration */
     header[data-testid="stHeader"] {
         background-color: transparent !important;
     }
@@ -251,7 +281,6 @@ def load_predictor():
 def load_dataset():
     """Loads and standardizes the Iris botanical dataset."""
     df = pd.read_csv(DATA_PATH)
-    # Ensure standardized column names
     col_map = {
         "SepalLengthCm": "sepal_length",
         "SepalWidthCm": "sepal_width",
@@ -262,7 +291,6 @@ def load_dataset():
     df = df.rename(columns=col_map)
     if "Id" in df.columns:
         df = df.drop(columns=["Id"])
-    # Clean species labels if prefixed
     df["species"] = df["species"].astype(str).str.replace("Iris-", "")
     return df
 
@@ -279,7 +307,7 @@ def main():
     df = load_dataset()
     meta = load_metadata()
 
-    # Session State Initialization for Classifier Presets
+    # Session State for Classifier Presets
     if "sepal_len" not in st.session_state:
         st.session_state.sepal_len = 5.8
     if "sepal_wid" not in st.session_state:
@@ -290,28 +318,29 @@ def main():
         st.session_state.petal_wid = 1.3
 
     # =========================================================================
-    # LEFT SIDEBAR NAVIGATION & BRANDING
+    # SIDEBAR: REFERENCE-INSPIRED SAAS NAVIGATION
     # =========================================================================
     with st.sidebar:
         st.markdown("""
-        <div style="padding-bottom: 1.25rem; border-bottom: 1px solid #E4E9E2; margin-bottom: 1.5rem;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <div style="width: 38px; height: 38px; border-radius: 10px; background: #E8F0E8; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+        <div style="padding-bottom: 1.5rem; border-bottom: 1px solid #E4EBE3; margin-bottom: 1.5rem;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 44px; height: 44px; border-radius: 12px; background: #DFF4E5; border: 1px solid #C7E2CE; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
                     🌿
                 </div>
                 <div>
-                    <div style="font-size: 1.25rem; font-weight: 800; color: #1D3026; letter-spacing: -0.02em;">IrisAI</div>
-                    <div style="font-size: 0.72rem; color: #8BAA91; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;">Botanical Studio</div>
+                    <div style="font-size: 1.35rem; font-weight: 800; color: #183A2A; letter-spacing: -0.03em;">IrisAI</div>
+                    <div style="font-size: 0.72rem; color: #5C9A72; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;">Botanical Studio</div>
                 </div>
             </div>
-            <div style="font-size: 0.78rem; color: #647269; margin-top: 8px; font-style: italic;">
-                Discover. Analyze. Classify.
+            <div style="font-size: 0.78rem; color: #7E9485; margin-top: 10px; font-weight: 500;">
+                Where Nature Meets Intelligence.
             </div>
         </div>
         """, unsafe_allow_html=True)
 
+        st.markdown("<div style='font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #8BAA91; margin-bottom: 8px;'>Workspace</div>", unsafe_allow_html=True)
         page = st.radio(
-            "Studio Navigation",
+            "Navigation",
             [
                 "Overview",
                 "Flower Classifier",
@@ -323,71 +352,92 @@ def main():
             label_visibility="collapsed"
         )
 
-        st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='height: 60px;'></div>", unsafe_allow_html=True)
         st.markdown("""
-        <div style="padding-top: 1.25rem; border-top: 1px solid #E4E9E2; font-size: 0.75rem; color: #647269; line-height: 1.7;">
-            <div style="font-weight: 700; color: #1D3026; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Engine Specs</div>
-            <div>Model: <b>Random Forest</b></div>
-            <div>Features: <b>4 Morphometric Inputs</b></div>
+        <div style="padding-top: 1.25rem; border-top: 1px solid #E4EBE3; font-size: 0.75rem; color: #7E9485; line-height: 1.8;">
+            <div style="font-weight: 800; color: #183A2A; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Engine Specs</div>
+            <div>Model: <b style="color: #183A2A;">Random Forest Pipeline</b></div>
             <div>Test Accuracy: <b style="color: #285943;">96.67% (Audited)</b></div>
-            <div>Platform: <b>IrisAI v2.0 Studio</b></div>
+            <div>Taxonomy: <b style="color: #183A2A;">Fisher's 3 Iris Species</b></div>
+            <div>Release: <b style="color: #5C9A72;">v2.0 SaaS Edition</b></div>
         </div>
         """, unsafe_allow_html=True)
 
+    # Top Navigation Breadcrumb Bar
+    st.markdown(f"""
+    <div class="saas-topbar">
+        <div class="breadcrumb-text">
+            <span>IrisAI Studio</span> &nbsp;/&nbsp; <span style="color: #183A2A; font-weight: 700;">{page}</span>
+        </div>
+        <div class="user-pill">
+            <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #285943;"></span>
+            <span>Botanical Lab Active</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
     # =========================================================================
-    # PAGE 1: OVERVIEW
+    # PAGE 1: OVERVIEW & BOTANICAL HERO
     # =========================================================================
     if page == "Overview":
+        # Reference-Inspired Botanical Hero Banner
         st.markdown("""
-        <div class="studio-header">
-            <div class="studio-title">Botanical Intelligence</div>
-            <div class="studio-subtitle">Explore Iris morphology and discover intelligent species classification across Fisher's classical dataset.</div>
+        <div class="botanical-hero">
+            <div class="hero-tagline">Botanical Intelligence Studio</div>
+            <div class="hero-headline">Where Nature Meets Intelligence</div>
+            <div class="hero-subtext">
+                Explore morphometric Iris clustering, inspect multi-variate botanical distributions, and execute machine learning classification powered by a calibrated Random Forest pipeline.
+            </div>
         </div>
         """, unsafe_allow_html=True)
 
-        # KPI Metrics Row
-        col1, col2, col3, col4 = st.columns(4)
-        with col1:
+        # 4 Pastel Floating Telemetry KPI Cards
+        k1, k2, k3, k4 = st.columns(4)
+        with k1:
             st.markdown(f"""
-            <div class="kpi-box">
-                <div class="kpi-label">Dataset Specimens</div>
+            <div class="kpi-card-mint">
+                <div class="kpi-icon-pill" style="background: #EAE7F5; color: #6B5B95;">🌸</div>
                 <div class="kpi-val">{len(df)}</div>
-                <div class="kpi-sub">50 balanced samples / class</div>
+                <div class="kpi-label">Dataset Specimens</div>
+                <div class="kpi-delta">50 balanced samples / class</div>
             </div>
             """, unsafe_allow_html=True)
-        with col2:
+        with k2:
             st.markdown(f"""
-            <div class="kpi-box">
-                <div class="kpi-label">Distinct Species</div>
+            <div class="kpi-card-mint">
+                <div class="kpi-icon-pill" style="background: #F8EDDE; color: #B88A62;">🌿</div>
                 <div class="kpi-val">{df['species'].nunique()}</div>
-                <div class="kpi-sub">Setosa, Versicolor, Virginica</div>
+                <div class="kpi-label">Distinct Species</div>
+                <div class="kpi-delta">Setosa, Versicolor, Virginica</div>
             </div>
             """, unsafe_allow_html=True)
-        with col3:
+        with k3:
             st.markdown("""
-            <div class="kpi-box">
+            <div class="kpi-card-mint">
+                <div class="kpi-icon-pill" style="background: #DFF4E5; color: #285943;">📏</div>
+                <div class="kpi-val">4</div>
                 <div class="kpi-label">Input Dimensions</div>
-                <div class="kpi-val">4 Features</div>
-                <div class="kpi-sub">Sepal & Petal Length/Width (cm)</div>
+                <div class="kpi-delta">Sepal & Petal Length/Width</div>
             </div>
             """, unsafe_allow_html=True)
-        with col4:
+        with k4:
             st.markdown(f"""
-            <div class="kpi-box">
+            <div class="kpi-card-mint">
+                <div class="kpi-icon-pill" style="background: #E9F1E8; color: #285943;">🎯</div>
+                <div class="kpi-val">{meta['test_metrics']['Test Accuracy']*100:.1f}%</div>
                 <div class="kpi-label">Classifier Accuracy</div>
-                <div class="kpi-val" style="color: #285943;">{meta['test_metrics']['Test Accuracy']*100:.2f}%</div>
-                <div class="kpi-sub">Audited held-out test split</div>
+                <div class="kpi-delta">Audited held-out test split</div>
             </div>
             """, unsafe_allow_html=True)
 
-        st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
 
-        # Overview Visualizations: 2 Columns
-        c_left, c_right = st.columns([11, 9])
-        with c_left:
-            st.markdown('<div class="botanical-card">', unsafe_allow_html=True)
-            st.markdown("<h4 style='color: #1D3026; margin-top: 0;'>Morphological Relationships</h4>", unsafe_allow_html=True)
-            st.caption("Petal length versus petal width shows orthogonal linear separation for Setosa and clear margin clustering.")
+        # Main Workspace Charts: 2 Columns
+        col_c1, col_c2 = st.columns([11, 9])
+        with col_c1:
+            st.markdown('<div class="saas-card">', unsafe_allow_html=True)
+            st.markdown('<div class="card-title">Morphological Relationships</div>', unsafe_allow_html=True)
+            st.markdown('<div class="card-sub">Petal length versus petal width displays orthogonal separation for Setosa and clear margin clustering for Virginica.</div>', unsafe_allow_html=True)
 
             fig_scat = px.scatter(
                 df,
@@ -397,22 +447,22 @@ def main():
                 color_discrete_map={"Setosa": "#6B5B95", "Versicolor": "#B88A62", "Virginica": "#285943"},
                 labels={"petal_length": "Petal Length (cm)", "petal_width": "Petal Width (cm)", "species": "Species"},
                 template="plotly_white",
-                height=360
+                height=350
             )
             fig_scat.update_layout(
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="#FFFFFF",
-                font=dict(color="#647269", family="Inter"),
+                font=dict(color="#647269", family="Manrope"),
                 margin=dict(l=20, r=20, t=10, b=20),
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
             )
             st.plotly_chart(fig_scat, use_container_width=True)
             st.markdown('</div>', unsafe_allow_html=True)
 
-        with c_right:
-            st.markdown('<div class="botanical-card">', unsafe_allow_html=True)
-            st.markdown("<h4 style='color: #1D3026; margin-top: 0;'>Species Distribution</h4>", unsafe_allow_html=True)
-            st.caption("Specimen counts per botanical taxon across the historical 150-sample survey.")
+        with col_c2:
+            st.markdown('<div class="saas-card">', unsafe_allow_html=True)
+            st.markdown('<div class="card-title">Species Cohort Balance</div>', unsafe_allow_html=True)
+            st.markdown('<div class="card-sub">Specimen distribution across Fisher\'s classical 150-sample survey.</div>', unsafe_allow_html=True)
 
             spec_counts = df["species"].value_counts().reset_index()
             spec_counts.columns = ["species", "count"]
@@ -422,111 +472,80 @@ def main():
                 values="count",
                 color="species",
                 color_discrete_map={"Setosa": "#6B5B95", "Versicolor": "#B88A62", "Virginica": "#285943"},
-                hole=0.55,
+                hole=0.6,
                 template="plotly_white",
-                height=360
+                height=350
             )
             fig_pie.update_layout(
                 paper_bgcolor="rgba(0,0,0,0)",
                 margin=dict(l=10, r=10, t=10, b=10),
-                font=dict(color="#647269", family="Inter")
+                font=dict(color="#647269", family="Manrope")
             )
             st.plotly_chart(fig_pie, use_container_width=True)
             st.markdown('</div>', unsafe_allow_html=True)
 
-        # Species Cohort Profiles
-        st.markdown('<div class="botanical-card">', unsafe_allow_html=True)
-        st.markdown("<h4 style='color: #1D3026; margin-top: 0;'>Species Cohort Profiles (Empirical Means)</h4>", unsafe_allow_html=True)
+        # Species Cohort Profiles Table
+        st.markdown('<div class="saas-card">', unsafe_allow_html=True)
+        st.markdown('<div class="card-title">Empirical Species Morphometric Means</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-sub">Baseline feature means computed directly from authentic dataset observations.</div>', unsafe_allow_html=True)
         means_df = df.groupby("species")[["sepal_length", "sepal_width", "petal_length", "petal_width"]].mean().round(2).reset_index()
-        means_df.columns = ["Botanical Species", "Mean Sepal Length (cm)", "Mean Sepal Width (cm)", "Mean Petal Length (cm)", "Mean Petal Width (cm)"]
+        means_df.columns = ["Botanical Species", "Sepal Length (cm)", "Sepal Width (cm)", "Petal Length (cm)", "Petal Width (cm)"]
         st.dataframe(means_df, use_container_width=True, hide_index=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
     # =========================================================================
-    # PAGE 2: FLOWER CLASSIFIER
+    # PAGE 2: FLOWER CLASSIFIER (2-COLUMN REFERENCE WORKSPACE)
     # =========================================================================
     elif page == "Flower Classifier":
         st.markdown("""
-        <div class="studio-header">
-            <div class="studio-title">Botanical Specimen Classifier</div>
-            <div class="studio-subtitle">Enter flower measurements to identify the Iris species with machine-calibrated Softmax confidence.</div>
+        <div style="margin-bottom: 20px;">
+            <div style="font-size: 1.85rem; font-weight: 800; color: #183A2A; letter-spacing: -0.02em;">Botanical Specimen Classifier</div>
+            <div style="font-size: 0.9rem; color: #7E9485;">Enter flower measurements to identify the Iris species with machine-calibrated Softmax confidence.</div>
         </div>
         """, unsafe_allow_html=True)
 
         col_left, col_right = st.columns([1, 1], gap="large")
 
-        # LEFT COLUMN: Measurement Controls
+        # LEFT COLUMN: Measurement Controls & Presets
         with col_left:
-            st.markdown('<div class="botanical-card">', unsafe_allow_html=True)
-            st.markdown("<h4 style='color: #1D3026; margin-top: 0;'>Measurement Controls</h4>", unsafe_allow_html=True)
-            st.caption("Adjust sliders within empirical botanical ranges (4.3–7.9 cm sepal, 1.0–6.9 cm petal).")
+            st.markdown('<div class="saas-card">', unsafe_allow_html=True)
+            st.markdown('<div class="card-title">Measurement Controls</div>', unsafe_allow_html=True)
+            st.markdown('<div class="card-sub">Calibrated physical measurements bounded by empirical dataset extremes.</div>', unsafe_allow_html=True)
 
-            s_len = st.slider(
-                "Sepal Length (cm)",
-                min_value=4.0,
-                max_value=8.0,
-                value=float(st.session_state.sepal_len),
-                step=0.1,
-                help="Outer protective leaf length in centimeters."
-            )
-            s_wid = st.slider(
-                "Sepal Width (cm)",
-                min_value=2.0,
-                max_value=4.5,
-                value=float(st.session_state.sepal_wid),
-                step=0.1,
-                help="Lateral width of the outer sepal leaf."
-            )
-            p_len = st.slider(
-                "Petal Length (cm)",
-                min_value=1.0,
-                max_value=7.0,
-                value=float(st.session_state.petal_len),
-                step=0.1,
-                help="Length of the inner flowering petal leaf."
-            )
-            p_wid = st.slider(
-                "Petal Width (cm)",
-                min_value=0.1,
-                max_value=2.6,
-                value=float(st.session_state.petal_wid),
-                step=0.1,
-                help="Lateral width of the inner flowering petal."
-            )
+            s_len = st.slider("Sepal Length (cm)", 4.0, 8.0, float(st.session_state.sepal_len), 0.1, help="Outer sepal leaf length in cm.")
+            s_wid = st.slider("Sepal Width (cm)", 2.0, 4.5, float(st.session_state.sepal_wid), 0.1, help="Outer sepal leaf width in cm.")
+            p_len = st.slider("Petal Length (cm)", 1.0, 7.0, float(st.session_state.petal_len), 0.1, help="Inner flowering petal length in cm.")
+            p_wid = st.slider("Petal Width (cm)", 0.1, 2.6, float(st.session_state.petal_wid), 0.1, help="Inner flowering petal width in cm.")
 
-            # Update session state with active sliders
             st.session_state.sepal_len = s_len
             st.session_state.sepal_wid = s_wid
             st.session_state.petal_len = p_len
             st.session_state.petal_wid = p_wid
 
-            # Quick Preset Profiles
-            st.markdown("<hr style='border: none; border-top: 1px solid #E4E9E2; margin: 18px 0;'>", unsafe_allow_html=True)
-            st.markdown("<div style='font-size: 0.8rem; font-weight: 700; color: #1D3026; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;'>Botanical Sample Presets</div>", unsafe_allow_html=True)
+            # Presets
+            st.markdown("<hr style='border: none; border-top: 1px solid #E4EBE3; margin: 20px 0;'>", unsafe_allow_html=True)
+            st.markdown("<div style='font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #8BAA91; margin-bottom: 10px;'>Botanical Sample Presets</div>", unsafe_allow_html=True)
 
-            p_col1, p_col2, p_col3, p_col4 = st.columns(4)
-            if p_col1.button("🌸 Setosa"):
+            p1, p2, p3, p4 = st.columns(4)
+            if p1.button("🌸 Setosa"):
                 st.session_state.sepal_len = 5.0
                 st.session_state.sepal_wid = 3.4
                 st.session_state.petal_len = 1.5
                 st.session_state.petal_wid = 0.2
                 st.rerun()
-
-            if p_col2.button("🌾 Versicolor"):
+            if p2.button("🌾 Versicolor"):
                 st.session_state.sepal_len = 5.9
                 st.session_state.sepal_wid = 2.8
                 st.session_state.petal_len = 4.3
                 st.session_state.petal_wid = 1.3
                 st.rerun()
-
-            if p_col3.button("🌺 Virginica"):
+            if p3.button("🌺 Virginica"):
                 st.session_state.sepal_len = 6.6
                 st.session_state.sepal_wid = 3.0
                 st.session_state.petal_len = 5.6
                 st.session_state.petal_wid = 2.0
                 st.rerun()
-
-            if p_col4.button("🔄 Reset"):
+            if p4.button("🔄 Reset"):
                 st.session_state.sepal_len = 5.8
                 st.session_state.sepal_wid = 3.0
                 st.session_state.petal_len = 4.3
@@ -535,12 +554,12 @@ def main():
 
             st.markdown('</div>', unsafe_allow_html=True)
 
-        # RIGHT COLUMN: Prediction Result Panel
+        # RIGHT COLUMN: Floating Prediction Panel
         with col_right:
-            st.markdown('<div class="botanical-card">', unsafe_allow_html=True)
-            st.markdown("<h4 style='color: #1D3026; margin-top: 0;'>Taxonomic Diagnosis</h4>", unsafe_allow_html=True)
+            st.markdown('<div class="saas-card">', unsafe_allow_html=True)
+            st.markdown('<div class="card-title">Taxonomic Diagnosis</div>', unsafe_allow_html=True)
+            st.markdown('<div class="card-sub">Inference executed live through the trained Random Forest pipeline.</div>', unsafe_allow_html=True)
 
-            # Execute real model inference
             res = predictor.predict(
                 sepal_length=s_len,
                 sepal_width=s_wid,
@@ -552,28 +571,28 @@ def main():
             conf = res["confidence"]
             probs = res["probabilities"]
 
-            hero_theme = {
-                "Setosa": ("pred-hero-setosa", "#6B5B95", "Iris Setosa"),
-                "Versicolor": ("pred-hero-versicolor", "#B88A62", "Iris Versicolor"),
-                "Virginica": ("pred-hero-virginica", "#285943", "Iris Virginica")
-            }.get(pred_species, ("pred-hero-virginica", "#285943", f"Iris {pred_species}"))
+            badge_style = {
+                "Setosa": ("hero-badge-setosa", "#6B5B95", "Iris Setosa"),
+                "Versicolor": ("hero-badge-versicolor", "#B88A62", "Iris Versicolor"),
+                "Virginica": ("hero-badge-virginica", "#285943", "Iris Virginica")
+            }.get(pred_species, ("hero-badge-virginica", "#285943", f"Iris {pred_species}"))
 
             st.markdown(f"""
-            <div class="{hero_theme[0]}">
-                <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: {hero_theme[1]};">
+            <div class="{badge_style[0]}">
+                <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: {badge_style[1]};">
                     Verified Taxonomic Diagnosis
                 </div>
-                <div class="pred-species-name" style="color: {hero_theme[1]};">
-                    {hero_theme[2]}
+                <div style="font-size: 2.3rem; font-weight: 800; color: {badge_style[1]}; letter-spacing: -0.02em; margin: 6px 0;">
+                    {badge_style[2]}
                 </div>
-                <div style="font-size: 0.95rem; font-weight: 600; color: #1D3026;">
+                <div style="font-size: 0.95rem; font-weight: 700; color: #183A2A;">
                     Model Confidence: <b>{conf * 100:.2f}%</b>
                 </div>
             </div>
             """, unsafe_allow_html=True)
 
-            # Softmax Probability Distribution Bar
-            st.markdown("<div style='font-size: 0.8rem; font-weight: 700; color: #1D3026; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;'>Class Probability Distribution</div>", unsafe_allow_html=True)
+            # Probabilities Bar
+            st.markdown("<div style='font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #8BAA91; margin-bottom: 8px;'>Softmax Probability Distribution</div>", unsafe_allow_html=True)
             prob_df = pd.DataFrame({
                 "Species": [f"Iris {k}" for k in probs.keys()],
                 "Probability (%)": [round(v * 100, 2) for v in probs.values()]
@@ -601,28 +620,26 @@ def main():
                 yaxis=dict(autorange="reversed"),
                 margin=dict(l=10, r=10, t=10, b=10),
                 showlegend=False,
-                font=dict(color="#647269", family="Inter")
+                font=dict(color="#647269", family="Manrope")
             )
             fig_p.update_traces(textposition="outside", texttemplate="%{x:.1f}%")
             st.plotly_chart(fig_p, use_container_width=True)
 
-            # Input measurement recap
-            st.markdown("<div style='font-size: 0.8rem; font-weight: 700; color: #1D3026; text-transform: uppercase; letter-spacing: 0.05em; margin: 12px 0 6px 0;'>Active Measurement Recap</div>", unsafe_allow_html=True)
+            # Recap Pill
             st.markdown(f"""
-            <div style="background: #F7F8F3; border: 1px solid #E4E9E2; border-radius: 8px; padding: 10px 14px; font-size: 0.8rem; color: #1D3026; display: flex; justify-content: space-between;">
+            <div style="background: #F2F7F3; border: 1px solid #E4EBE3; border-radius: 12px; padding: 12px 16px; font-size: 0.8rem; color: #183A2A; display: flex; justify-content: space-between; margin-top: 14px;">
                 <span>Sepal: <b>{s_len} × {s_wid} cm</b></span>
                 <span>Petal: <b>{p_len} × {p_wid} cm</b></span>
-                <span>Petal Ratio: <b>{p_len/p_wid:.2f}</b></span>
+                <span>Petal Aspect Ratio: <b>{p_len/p_wid:.2f}</b></span>
             </div>
             """, unsafe_allow_html=True)
 
-            # Educational Note
-            notes = {
-                "Setosa": "Characterized by compact petal lengths (< 2 cm) and broad sepals. Highly distinguishable with 100% linear separability.",
-                "Versicolor": "Moderate petal dimensions (3.0–5.1 cm) with slender sepals. Occupies intermediate morphometric space.",
-                "Virginica": "Dominant structural scale with long petals (4.5–6.9 cm) and higher width (> 1.4 cm). Morphologically largest."
+            descriptions = {
+                "Setosa": "Highly separable cluster with diminutive petals (< 2 cm) and robust sepal breadth. Discovered in Arctic/coastal marshes.",
+                "Versicolor": "Harmonious intermediate scale across all dimensions. Known as the Blue Flag iris.",
+                "Virginica": "Maximum structural scale with dominant petals (> 5 cm). Known as the Southern Blue Flag."
             }
-            st.info(f"🌿 **Botanical Profile:** {notes.get(pred_species, '')}")
+            st.info(f"🌿 **Botanical Insight:** {descriptions.get(pred_species, '')}")
             st.markdown('</div>', unsafe_allow_html=True)
 
     # =========================================================================
@@ -630,36 +647,29 @@ def main():
     # =========================================================================
     elif page == "Dataset Explorer":
         st.markdown("""
-        <div class="studio-header">
-            <div class="studio-title">Botanical Dataset Explorer</div>
-            <div class="studio-subtitle">Inspect raw specimen records, filter across taxonomic groups, and examine statistical moments.</div>
+        <div style="margin-bottom: 20px;">
+            <div style="font-size: 1.85rem; font-weight: 800; color: #183A2A; letter-spacing: -0.02em;">Botanical Dataset Explorer</div>
+            <div style="font-size: 0.9rem; color: #7E9485;">Search, filter, and inspect Fisher's 150 Iris specimens with descriptive statistical moments.</div>
         </div>
         """, unsafe_allow_html=True)
 
-        col_filt1, col_filt2 = st.columns([1, 2])
-        with col_filt1:
-            sel_species = st.multiselect(
-                "Filter by Species",
-                options=sorted(df["species"].unique().tolist()),
-                default=sorted(df["species"].unique().tolist())
-            )
-        with col_filt2:
-            search_query = st.text_input("Search (e.g. 5.1, Setosa)", "")
+        col_f1, col_f2 = st.columns([1, 2])
+        with col_f1:
+            sel_species = st.multiselect("Filter Species:", sorted(df["species"].unique().tolist()), default=sorted(df["species"].unique().tolist()))
+        with col_f2:
+            search_query = st.text_input("Search Specimen Attribute:", "")
 
         filtered = df[df["species"].isin(sel_species)]
         if search_query:
-            filtered = filtered[
-                filtered.apply(lambda row: row.astype(str).str.contains(search_query, case=False).any(), axis=1)
-            ]
+            filtered = filtered[filtered.apply(lambda row: row.astype(str).str.contains(search_query, case=False).any(), axis=1)]
 
-        st.markdown('<div class="botanical-card">', unsafe_allow_html=True)
-        st.markdown(f"<div style='font-size: 0.85rem; font-weight: 600; color: #1D3026; margin-bottom: 8px;'>Displaying {len(filtered)} of {len(df)} specimens</div>", unsafe_allow_html=True)
-        st.dataframe(filtered, use_container_width=True, height=360, hide_index=False)
+        st.markdown('<div class="saas-card">', unsafe_allow_html=True)
+        st.markdown(f'<div class="card-title">Specimen Catalog ({len(filtered)} records)</div>', unsafe_allow_html=True)
+        st.dataframe(filtered, use_container_width=True, height=360)
         st.markdown('</div>', unsafe_allow_html=True)
 
-        # Statistical Moments
-        st.markdown('<div class="botanical-card">', unsafe_allow_html=True)
-        st.markdown("<h4 style='color: #1D3026; margin-top: 0;'>Descriptive Statistics (cm)</h4>", unsafe_allow_html=True)
+        st.markdown('<div class="saas-card">', unsafe_allow_html=True)
+        st.markdown('<div class="card-title">Statistical Distributions (Centimeters)</div>', unsafe_allow_html=True)
         st.dataframe(filtered[["sepal_length", "sepal_width", "petal_length", "petal_width"]].describe().round(3), use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -668,182 +678,147 @@ def main():
     # =========================================================================
     elif page == "Species Insights":
         st.markdown("""
-        <div class="studio-header">
-            <div class="studio-title">Species Morphology & Insights</div>
-            <div class="studio-subtitle">Examine structural profiles, feature relationships, and dimensional contrasts across the three species.</div>
+        <div style="margin-bottom: 20px;">
+            <div style="font-size: 1.85rem; font-weight: 800; color: #183A2A; letter-spacing: -0.02em;">Species Morphology & Profiles</div>
+            <div style="font-size: 0.9rem; color: #7E9485;">Empirical comparison of dimensional boundaries, violin dispersion, and species profiles.</div>
         </div>
         """, unsafe_allow_html=True)
 
-        # 3 Profile Cards Row
-        c_set, c_ver, c_vir = st.columns(3)
         means = df.groupby("species").mean().round(2)
+        c_set, c_ver, c_vir = st.columns(3)
 
         with c_set:
             st.markdown(f"""
-            <div class="profile-card">
-                <div class="profile-header-setosa">Iris Setosa</div>
-                <div style="font-size: 0.8rem; color: #647269; margin-bottom: 12px;">Muted Purple Accent • Linearly Separable</div>
-                <div style="font-size: 0.82rem; line-height: 1.8; color: #1D3026;">
-                    <div>Sepal Length: <b>{means.loc['Setosa', 'sepal_length']} cm</b></div>
-                    <div>Sepal Width: <b>{means.loc['Setosa', 'sepal_width']} cm</b> (Broadest)</div>
-                    <div>Petal Length: <b>{means.loc['Setosa', 'petal_length']} cm</b> (Shortest)</div>
-                    <div>Petal Width: <b>{means.loc['Setosa', 'petal_width']} cm</b> (Slenderest)</div>
+            <div class="saas-card" style="border-top: 4px solid #6B5B95;">
+                <div style="font-size: 1.25rem; font-weight: 800; color: #6B5B95; margin-bottom: 4px;">Iris Setosa</div>
+                <div style="font-size: 0.8rem; color: #7E9485; margin-bottom: 14px;">Muted Lavender • Complete Linear Separation</div>
+                <div style="font-size: 0.82rem; line-height: 1.9; color: #183A2A;">
+                    <div>Mean Sepal Length: <b>{means.loc['Setosa', 'sepal_length']} cm</b></div>
+                    <div>Mean Sepal Width: <b>{means.loc['Setosa', 'sepal_width']} cm</b> (Broadest)</div>
+                    <div>Mean Petal Length: <b>{means.loc['Setosa', 'petal_length']} cm</b> (Shortest)</div>
+                    <div>Mean Petal Width: <b>{means.loc['Setosa', 'petal_width']} cm</b> (Slenderest)</div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
 
         with c_ver:
             st.markdown(f"""
-            <div class="profile-card">
-                <div class="profile-header-versicolor">Iris Versicolor</div>
-                <div style="font-size: 0.8rem; color: #647269; margin-bottom: 12px;">Warm Amber Accent • Intermediate Scale</div>
-                <div style="font-size: 0.82rem; line-height: 1.8; color: #1D3026;">
-                    <div>Sepal Length: <b>{means.loc['Versicolor', 'sepal_length']} cm</b></div>
-                    <div>Sepal Width: <b>{means.loc['Versicolor', 'sepal_width']} cm</b></div>
-                    <div>Petal Length: <b>{means.loc['Versicolor', 'petal_length']} cm</b></div>
-                    <div>Petal Width: <b>{means.loc['Versicolor', 'petal_width']} cm</b></div>
+            <div class="saas-card" style="border-top: 4px solid #B88A62;">
+                <div style="font-size: 1.25rem; font-weight: 800; color: #B88A62; margin-bottom: 4px;">Iris Versicolor</div>
+                <div style="font-size: 0.8rem; color: #7E9485; margin-bottom: 14px;">Warm Amber • Intermediate Manifold</div>
+                <div style="font-size: 0.82rem; line-height: 1.9; color: #183A2A;">
+                    <div>Mean Sepal Length: <b>{means.loc['Versicolor', 'sepal_length']} cm</b></div>
+                    <div>Mean Sepal Width: <b>{means.loc['Versicolor', 'sepal_width']} cm</b></div>
+                    <div>Mean Petal Length: <b>{means.loc['Versicolor', 'petal_length']} cm</b></div>
+                    <div>Mean Petal Width: <b>{means.loc['Versicolor', 'petal_width']} cm</b></div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
 
         with c_vir:
             st.markdown(f"""
-            <div class="profile-card">
-                <div class="profile-header-virginica">Iris Virginica</div>
-                <div style="font-size: 0.8rem; color: #647269; margin-bottom: 12px;">Botanical Forest Teal • Maximum Dimensions</div>
-                <div style="font-size: 0.82rem; line-height: 1.8; color: #1D3026;">
-                    <div>Sepal Length: <b>{means.loc['Virginica', 'sepal_length']} cm</b> (Longest)</div>
-                    <div>Sepal Width: <b>{means.loc['Virginica', 'sepal_width']} cm</b></div>
-                    <div>Petal Length: <b>{means.loc['Virginica', 'petal_length']} cm</b> (Longest)</div>
-                    <div>Petal Width: <b>{means.loc['Virginica', 'petal_width']} cm</b> (Widest)</div>
+            <div class="saas-card" style="border-top: 4px solid #285943;">
+                <div style="font-size: 1.25rem; font-weight: 800; color: #285943; margin-bottom: 4px;">Iris Virginica</div>
+                <div style="font-size: 0.8rem; color: #7E9485; margin-bottom: 14px;">Botanical Forest Teal • Maximum Dimensionality</div>
+                <div style="font-size: 0.82rem; line-height: 1.9; color: #183A2A;">
+                    <div>Mean Sepal Length: <b>{means.loc['Virginica', 'sepal_length']} cm</b> (Longest)</div>
+                    <div>Mean Sepal Width: <b>{means.loc['Virginica', 'sepal_width']} cm</b></div>
+                    <div>Mean Petal Length: <b>{means.loc['Virginica', 'petal_length']} cm</b> (Longest)</div>
+                    <div>Mean Petal Width: <b>{means.loc['Virginica', 'petal_width']} cm</b> (Widest)</div>
                 </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+        # Comparative Boxplots
+        col_b1, col_b2 = st.columns(2)
+        with col_b1:
+            st.markdown('<div class="saas-card">', unsafe_allow_html=True)
+            st.markdown('<div class="card-title">Petal Length Dispersion</div>', unsafe_allow_html=True)
+            fig_v1 = px.box(df, x="species", y="petal_length", color="species", color_discrete_map={"Setosa": "#6B5B95", "Versicolor": "#B88A62", "Virginica": "#285943"}, template="plotly_white", height=300)
+            fig_v1.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="#FFFFFF", showlegend=False)
+            st.plotly_chart(fig_v1, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+
+        with col_b2:
+            st.markdown('<div class="saas-card">', unsafe_allow_html=True)
+            st.markdown('<div class="card-title">Sepal Width Dispersion</div>', unsafe_allow_html=True)
+            fig_v2 = px.box(df, x="species", y="sepal_width", color="species", color_discrete_map={"Setosa": "#6B5B95", "Versicolor": "#B88A62", "Virginica": "#285943"}, template="plotly_white", height=300)
+            fig_v2.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="#FFFFFF", showlegend=False)
+            st.plotly_chart(fig_v2, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+
+    # =========================================================================
+    # PAGE 5: MODEL PERFORMANCE (SCIENTIFIC EVALUATION)
+    # =========================================================================
+    elif page == "Model Performance":
+        st.markdown("""
+        <div style="margin-bottom: 20px;">
+            <div style="font-size: 1.85rem; font-weight: 800; color: #183A2A; letter-spacing: -0.02em;">Model Diagnostics & Scientific Evaluation</div>
+            <div style="font-size: 0.9rem; color: #7E9485;">Audited held-out test split evaluation for the serialized Random Forest classifier pipeline.</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        t_met = meta["test_metrics"]
+        m1, m2, m3, m4 = st.columns(4)
+        with m1:
+            st.markdown(f"""
+            <div class="kpi-card-mint">
+                <div class="kpi-icon-pill" style="background: #EAE7F5; color: #6B5B95;">🌲</div>
+                <div class="kpi-val" style="font-size: 1.45rem;">Random Forest</div>
+                <div class="kpi-label">Algorithm</div>
+                <div class="kpi-delta">100 trees • max_depth=4</div>
+            </div>
+            """, unsafe_allow_html=True)
+        with m2:
+            st.markdown(f"""
+            <div class="kpi-card-mint">
+                <div class="kpi-icon-pill" style="background: #DFF4E5; color: #285943;">🎯</div>
+                <div class="kpi-val" style="color: #285943;">{t_met['Test Accuracy']*100:.2f}%</div>
+                <div class="kpi-label">Test Accuracy</div>
+                <div class="kpi-delta">Stratified 80:20 split (N=30)</div>
+            </div>
+            """, unsafe_allow_html=True)
+        with m3:
+            st.markdown(f"""
+            <div class="kpi-card-mint">
+                <div class="kpi-icon-pill" style="background: #F8EDDE; color: #B88A62;">⚖️</div>
+                <div class="kpi-val">{t_met['Precision (Macro)']*100:.2f}%</div>
+                <div class="kpi-label">Precision (Macro)</div>
+                <div class="kpi-delta">Zero false positive bias</div>
+            </div>
+            """, unsafe_allow_html=True)
+        with m4:
+            st.markdown(f"""
+            <div class="kpi-card-mint">
+                <div class="kpi-icon-pill" style="background: #E9F1E8; color: #285943;">📊</div>
+                <div class="kpi-val">{t_met['F1-Score (Macro)']:.4f}</div>
+                <div class="kpi-label">Macro F1-Score</div>
+                <div class="kpi-delta">Harmonic class balance</div>
             </div>
             """, unsafe_allow_html=True)
 
         st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
 
-        # Feature Boxplot Comparison
-        c_b1, c_b2 = st.columns(2)
-        with c_b1:
-            st.markdown('<div class="botanical-card">', unsafe_allow_html=True)
-            st.markdown("<h4 style='color: #1D3026; margin-top: 0;'>Petal Length Dispersion</h4>", unsafe_allow_html=True)
-            fig_b1 = px.box(
-                df,
-                x="species",
-                y="petal_length",
-                color="species",
-                color_discrete_map={"Setosa": "#6B5B95", "Versicolor": "#B88A62", "Virginica": "#285943"},
-                template="plotly_white",
-                height=300
-            )
-            fig_b1.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="#FFFFFF", showlegend=False)
-            st.plotly_chart(fig_b1, use_container_width=True)
-            st.markdown('</div>', unsafe_allow_html=True)
-
-        with c_b2:
-            st.markdown('<div class="botanical-card">', unsafe_allow_html=True)
-            st.markdown("<h4 style='color: #1D3026; margin-top: 0;'>Sepal Width Dispersion</h4>", unsafe_allow_html=True)
-            fig_b2 = px.box(
-                df,
-                x="species",
-                y="sepal_width",
-                color="species",
-                color_discrete_map={"Setosa": "#6B5B95", "Versicolor": "#B88A62", "Virginica": "#285943"},
-                template="plotly_white",
-                height=300
-            )
-            fig_b2.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="#FFFFFF", showlegend=False)
-            st.plotly_chart(fig_b2, use_container_width=True)
-            st.markdown('</div>', unsafe_allow_html=True)
-
-    # =========================================================================
-    # PAGE 5: MODEL PERFORMANCE
-    # =========================================================================
-    elif page == "Model Performance":
-        st.markdown("""
-        <div class="studio-header">
-            <div class="studio-title">Model Diagnostics & Scientific Evaluation</div>
-            <div class="studio-subtitle">Audited cross-validation and test metrics from the serialized Random Forest classifier pipeline.</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        t_metrics = meta["test_metrics"]
-        k1, k2, k3, k4 = st.columns(4)
-        with k1:
-            st.markdown(f"""
-            <div class="kpi-box">
-                <div class="kpi-label">Algorithm</div>
-                <div class="kpi-val" style="font-size: 1.4rem;">Random Forest</div>
-                <div class="kpi-sub">100 estimators • max_depth=4</div>
-            </div>
-            """, unsafe_allow_html=True)
-        with k2:
-            st.markdown(f"""
-            <div class="kpi-box">
-                <div class="kpi-label">Test Set Accuracy</div>
-                <div class="kpi-val" style="color: #285943;">{t_metrics['Test Accuracy']*100:.2f}%</div>
-                <div class="kpi-sub">Stratified 80:20 split (N=30)</div>
-            </div>
-            """, unsafe_allow_html=True)
-        with k3:
-            st.markdown(f"""
-            <div class="kpi-box">
-                <div class="kpi-label">Precision (Macro)</div>
-                <div class="kpi-val">{t_metrics['Precision (Macro)']*100:.2f}%</div>
-                <div class="kpi-sub">Zero false positive bias</div>
-            </div>
-            """, unsafe_allow_html=True)
-        with k4:
-            st.markdown(f"""
-            <div class="kpi-box">
-                <div class="kpi-label">F1-Score (Macro)</div>
-                <div class="kpi-val" style="color: #8BAA91;">{t_metrics['F1-Score (Macro)']:.4f}</div>
-                <div class="kpi-sub">Harmonic mean balance</div>
-            </div>
-            """, unsafe_allow_html=True)
-
-        st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
-
-        # Confusion Matrix Heatmap
-        c_m1, c_m2 = st.columns([1, 1])
-        with c_m1:
-            st.markdown('<div class="botanical-card">', unsafe_allow_html=True)
-            st.markdown("<h4 style='color: #1D3026; margin-top: 0;'>Audited Confusion Matrix (Test Split)</h4>", unsafe_allow_html=True)
-
-            # Reconstruct confusion matrix from audit results
+        col_m1, col_m2 = st.columns([1, 1])
+        with col_m1:
+            st.markdown('<div class="saas-card">', unsafe_allow_html=True)
+            st.markdown('<div class="card-title">Audited Confusion Matrix</div>', unsafe_allow_html=True)
             cm_matrix = [[10, 0, 0], [0, 9, 1], [0, 0, 10]]
             labels = ["Setosa", "Versicolor", "Virginica"]
-
-            fig_cm = px.imshow(
-                cm_matrix,
-                labels=dict(x="Predicted Class", y="True Class", color="Specimens"),
-                x=labels,
-                y=labels,
-                text_auto=True,
-                color_continuous_scale="Greens",
-                template="plotly_white",
-                height=300
-            )
-            fig_cm.update_layout(
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor="#FFFFFF",
-                font=dict(color="#1D3026", family="Inter"),
-                margin=dict(l=10, r=10, t=10, b=10)
-            )
+            fig_cm = px.imshow(cm_matrix, labels=dict(x="Predicted Class", y="True Class", color="Specimens"), x=labels, y=labels, text_auto=True, color_continuous_scale="Greens", template="plotly_white", height=300)
+            fig_cm.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="#FFFFFF", font=dict(color="#183A2A", family="Manrope"), margin=dict(l=10, r=10, t=10, b=10))
             st.plotly_chart(fig_cm, use_container_width=True)
             st.markdown('</div>', unsafe_allow_html=True)
 
-        with c_m2:
-            st.markdown('<div class="botanical-card">', unsafe_allow_html=True)
-            st.markdown("<h4 style='color: #1D3026; margin-top: 0;'>Benchmark Comparison Matrix</h4>", unsafe_allow_html=True)
-            st.caption("Cross-model audit comparison under identical stratified test conditions.")
-
-            comp_df = pd.DataFrame(meta["comparison_table"])
-            comp_display = comp_df[["Model", "Train Accuracy", "Test Accuracy", "F1-Score (Macro)"]].copy()
-            comp_display["Train Accuracy"] = (comp_display["Train Accuracy"] * 100).round(2).astype(str) + "%"
-            comp_display["Test Accuracy"] = (comp_display["Test Accuracy"] * 100).round(2).astype(str) + "%"
-            comp_display["F1-Score (Macro)"] = comp_display["F1-Score (Macro)"].round(4)
-            st.dataframe(comp_display, use_container_width=True, hide_index=True)
+        with col_m2:
+            st.markdown('<div class="saas-card">', unsafe_allow_html=True)
+            st.markdown('<div class="card-title">Cross-Model Benchmark Comparison</div>', unsafe_allow_html=True)
+            st.markdown('<div class="card-sub">Comparison under identical 5-fold cross-validation & stratified test conditions.</div>', unsafe_allow_html=True)
+            comp_df = pd.DataFrame(meta["comparison_table"])[["Model", "Train Accuracy", "Test Accuracy", "F1-Score (Macro)"]].copy()
+            comp_df["Train Accuracy"] = (comp_df["Train Accuracy"] * 100).round(2).astype(str) + "%"
+            comp_df["Test Accuracy"] = (comp_df["Test Accuracy"] * 100).round(2).astype(str) + "%"
+            comp_df["F1-Score (Macro)"] = comp_df["F1-Score (Macro)"].round(4)
+            st.dataframe(comp_df, use_container_width=True, hide_index=True)
 
             st.info("ℹ️ **Scientific Audit Note:** Standard cross-validation with an 80:20 stratified split ensures zero data leakage. Random Forest provides the optimal non-linear separation on petal morphology.")
             st.markdown('</div>', unsafe_allow_html=True)
