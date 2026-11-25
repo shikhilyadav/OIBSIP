@@ -3,10 +3,84 @@
 @tailwind utilities;
 
 @layer base {
-  body {
+  /* 1. Global default cursor: default for all elements */
+  *, *::before, *::after {
+    cursor: default;
+  }
+
+  html, body, #root {
+    cursor: default;
     background-color: #F7F5F0;
     color: #202A28;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* 2. Headings, labels, cards, typography explicitly default cursor */
+  h1, h2, h3, h4, h5, h6,
+  p, span, label,
+  div, section, article, aside, header, nav, main, footer,
+  table, thead, tbody, tr, th, td,
+  ul, ol, li,
+  svg, svg * {
+    cursor: default;
+  }
+
+  /* 3. Interactive controls MUST have pointer cursor */
+  a,
+  a *,
+  button,
+  button *,
+  select,
+  select *,
+  summary,
+  summary *,
+  [role="button"],
+  [role="button"] *,
+  [role="link"],
+  [role="link"] *,
+  [role="tab"],
+  [role="tab"] *,
+  [role="combobox"],
+  [role="combobox"] *,
+  [role="menuitem"],
+  [role="menuitem"] *,
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  input[type="checkbox"],
+  input[type="radio"],
+  .cursor-pointer,
+  .cursor-pointer * {
+    cursor: pointer !important;
+  }
+
+  /* 4. Disabled elements get not-allowed cursor */
+  button:disabled,
+  button:disabled *,
+  input:disabled,
+  select:disabled,
+  textarea:disabled,
+  [disabled],
+  [disabled] *,
+  [aria-disabled="true"],
+  [aria-disabled="true"] *,
+  .cursor-not-allowed,
+  .cursor-not-allowed * {
+    cursor: not-allowed !important;
+  }
+
+  /* 5. ONLY real editable text inputs get cursor: text */
+  input[type="text"],
+  input[type="number"],
+  input[type="search"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="url"],
+  textarea,
+  [contenteditable="true"] {
+    cursor: text !important;
+    user-select: text;
   }
 }
 
@@ -29,6 +103,7 @@
 /* Card hover animation */
 .card-hover {
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: default;
 }
 .card-hover:hover {
   transform: translateY(-2px);
