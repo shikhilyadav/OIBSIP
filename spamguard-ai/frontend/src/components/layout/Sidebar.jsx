@@ -1,63 +1,74 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { 
-  ShieldAlert, 
+  ShieldCheck, 
   LayoutDashboard, 
   ScanSearch, 
+  Files, 
   Cpu, 
-  BarChart3, 
-  Terminal, 
-  History, 
-  Settings,
-  ShieldCheck,
-  Radio
+  Database, 
+  FlaskConical, 
+  BookOpen,
+  Activity,
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
+import { fetchHealth } from '../../api/client';
 
 const navItems = [
   { name: 'Overview', path: '/', icon: LayoutDashboard },
-  { name: 'Message Analyzer', path: '/analyzer', icon: ScanSearch, badge: 'Active' },
+  { name: 'Message Detector', path: '/detector', icon: ScanSearch, badge: 'Live' },
+  { name: 'Batch Analysis', path: '/batch', icon: Files },
   { name: 'Model Intelligence', path: '/models', icon: Cpu },
-  { name: 'Performance Analytics', path: '/analytics', icon: BarChart3 },
-  { name: 'Threat Intelligence', path: '/threat-intel', icon: Terminal },
-  { name: 'Scan History', path: '/history', icon: History },
-  { name: 'Settings', path: '/settings', icon: Settings },
+  { name: 'Dataset Explorer', path: '/dataset', icon: Database },
+  { name: 'Validation Lab', path: '/validation', icon: FlaskConical },
+  { name: 'Documentation', path: '/documentation', icon: BookOpen },
 ];
 
 export default function Sidebar() {
-  return (
-    <aside className="w-64 bg-cyber-card border-r border-cyber-border flex flex-col shrink-0 h-screen sticky top-0 select-none">
-      {/* Brand Header */}
-      <div className="p-5 border-b border-cyber-border flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center glow-accent">
-            <ShieldCheck className="w-5 h-5 text-cyber-accent" />
-          </div>
-          <div>
-            <div className="flex items-center space-x-1.5">
-              <span className="font-bold tracking-tight text-white font-mono text-base">SpamGuard</span>
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-cyber-accent uppercase border border-emerald-500/30">AI</span>
-            </div>
-            <p className="text-[11px] text-cyber-muted font-medium">SecOps Intelligence</p>
-          </div>
-        </div>
-      </div>
+  const [health, setHealth] = useState(null);
 
-      {/* Engine Status Banner */}
-      <div className="mx-4 mt-4 p-2.5 rounded-lg bg-cyber-surface/60 border border-cyber-border/80 flex items-center justify-between text-xs">
-        <div className="flex items-center space-x-2">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-          </span>
-          <span className="text-slate-300 font-mono text-[11px]">Hybrid Engine</span>
+  useEffect(() => {
+    fetchHealth()
+      .then(setHealth)
+      .catch(() => setHealth({ status: 'offline', engines: {} }));
+    const interval = setInterval(() => {
+      fetchHealth()
+        .then(setHealth)
+        .catch(() => setHealth({ status: 'offline', engines: {} }));
+    }, 20000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const engines = health?.engines || {};
+  const isHealthy = health?.status === 'healthy';
+
+  return (
+    <aside className="w-64 bg-[#542B38] text-white flex flex-col shrink-0 h-screen sticky top-0 select-none border-r border-[#421E2A] z-30">
+      {/* Brand Header */}
+      <div className="p-5 border-b border-white/10 flex items-center space-x-3">
+        <div className="w-10 h-10 rounded-2xl bg-[#D5BDA4] text-[#542B38] flex items-center justify-center shadow-md shrink-0">
+          <ShieldCheck className="w-6 h-6 stroke-[2.2]" />
         </div>
-        <span className="text-[10px] text-cyber-accent font-mono font-medium">ONLINE</span>
+        <div className="min-w-0">
+          <div className="flex items-center space-x-1.5">
+            <span className="font-extrabold text-base tracking-tight font-display text-white">
+              SpamShield
+            </span>
+            <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-[#A83F55] text-white tracking-wider">
+              AI
+            </span>
+          </div>
+          <p className="text-[11px] text-[#D5BDA4] font-medium tracking-tight truncate">
+            Intelligent Spam Detection
+          </p>
+        </div>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        <div className="text-[10px] font-mono uppercase text-cyber-muted px-3 mb-2 font-semibold tracking-wider">
-          Security Console
+        <div className="text-[10px] font-bold uppercase text-[#D5BDA4]/70 px-3 mb-2 tracking-widest">
+          Platform Workspace
         </div>
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -66,19 +77,19 @@ export default function Sidebar() {
               key={item.path}
               to={item.path}
               className={({ isActive }) =>
-                `flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                `flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
                   isActive
-                    ? 'bg-cyber-surface text-white border-l-2 border-cyber-accent shadow-sm'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-cyber-surface/50'
+                    ? 'bg-[#A83F55] text-white shadow-md font-bold'
+                    : 'text-[#EAE1D7] hover:bg-white/10 hover:text-white'
                 }`
               }
             >
               <div className="flex items-center space-x-3">
-                <Icon className="w-4 h-4 shrink-0 text-slate-400 group-hover:text-white" />
+                <Icon className="w-4 h-4 shrink-0 opacity-90" />
                 <span>{item.name}</span>
               </div>
               {item.badge && (
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyber-accent/15 text-cyber-accent border border-cyber-accent/30 font-semibold">
+                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#D5BDA4] text-[#542B38] tracking-wider uppercase">
                   {item.badge}
                 </span>
               )}
@@ -87,15 +98,37 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Footer Info */}
-      <div className="p-4 border-t border-cyber-border text-xs text-cyber-muted">
-        <div className="flex items-center justify-between font-mono text-[11px] mb-1">
-          <span>Triage Policy</span>
-          <span className="text-slate-300">θ=0.60/0.10</span>
+      {/* ML Models Panel (Bottom) */}
+      <div className="p-4 m-3 rounded-2xl bg-[#3D1D27]/80 border border-white/10 space-y-2.5">
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] uppercase font-extrabold tracking-wider text-[#D5BDA4]">
+            ML Models Cluster
+          </span>
+          <span className="flex h-2 w-2 relative">
+            <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isHealthy ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
+            <span className={`relative inline-flex rounded-full h-2 w-2 ${isHealthy ? 'bg-emerald-500' : 'bg-amber-500'}`}></span>
+          </span>
         </div>
-        <div className="flex items-center justify-between font-mono text-[11px]">
-          <span>Ensemble</span>
-          <span className="text-emerald-400 font-medium">BERT + MNB</span>
+
+        <div className="space-y-1.5 text-[11px]">
+          <div className="flex items-center justify-between text-[#EAE1D7]">
+            <span>Multinomial NB</span>
+            <span className={`font-mono text-[10px] font-bold ${engines.naive_bayes ? 'text-emerald-300' : 'text-amber-300'}`}>
+              {engines.naive_bayes ? 'ACTIVE' : 'READY'}
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-[#EAE1D7]">
+            <span>Logistic Regression</span>
+            <span className={`font-mono text-[10px] font-bold ${engines.logistic_regression ? 'text-emerald-300' : 'text-amber-300'}`}>
+              {engines.logistic_regression ? 'ACTIVE' : 'READY'}
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-[#EAE1D7]">
+            <span>BERT-Tiny (4.39M)</span>
+            <span className={`font-mono text-[10px] font-bold ${engines.bert_tiny ? 'text-emerald-300' : 'text-amber-300'}`}>
+              {engines.bert_tiny ? 'ACTIVE' : 'READY'}
+            </span>
+          </div>
         </div>
       </div>
     </aside>

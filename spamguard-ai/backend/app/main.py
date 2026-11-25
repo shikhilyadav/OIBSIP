@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import CORS_ORIGINS
 from app.ml.model_service import ModelService
-from app.routers import analyze, models, metrics, history, threat_intel
+from app.routers import analyze, models, metrics, history, threat_intel, dataset
 
 
 @asynccontextmanager
@@ -42,6 +42,7 @@ app.include_router(models.router, prefix="/api")
 app.include_router(metrics.router, prefix="/api")
 app.include_router(history.router, prefix="/api")
 app.include_router(threat_intel.router, prefix="/api")
+app.include_router(dataset.router, prefix="/api")
 
 
 @app.get("/api/health", tags=["Health"])

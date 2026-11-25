@@ -1,10 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, Activity, Bell, RefreshCw, Cpu } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
+import { 
+  Search, 
+  Bell, 
+  RefreshCw, 
+  Activity, 
+  User, 
+  ShieldCheck 
+} from 'lucide-react';
 import { fetchHealth } from '../../api/client';
 
+const pageTitles = {
+  '/': 'Overview',
+  '/detector': 'Message Detector',
+  '/batch': 'Batch Analysis',
+  '/models': 'Model Intelligence',
+  '/dataset': 'Dataset Explorer',
+  '/validation': 'Validation Lab',
+  '/documentation': 'Documentation',
+};
+
 export default function Topbar() {
-  const [health, setHealth] = useState({ status: 'checking', active_models: {} });
+  const location = useLocation();
+  const [health, setHealth] = useState({ status: 'checking' });
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const activeTitle = pageTitles[location.pathname] || 'Studio Workspace';
 
   const checkStatus = async () => {
     setIsRefreshing(true);
@@ -12,7 +33,7 @@ export default function Topbar() {
       const data = await fetchHealth();
       setHealth(data);
     } catch (e) {
-      setHealth({ status: 'offline', active_models: {} });
+      setHealth({ status: 'offline' });
     } finally {
       setIsRefreshing(false);
     }
@@ -20,54 +41,63 @@ export default function Topbar() {
 
   useEffect(() => {
     checkStatus();
-    const interval = setInterval(checkStatus, 30000);
-    return () => clearInterval(interval);
   }, []);
 
-  return (
-    <header className="h-16 bg-cyber-card border-b border-cyber-border px-6 flex items-center justify-between sticky top-0 z-20">
-      {/* Title / Status */}
-      <div className="flex items-center space-x-4">
-        <div className="flex items-center space-x-2">
-          <Activity className="w-4 h-4 text-cyber-accent" />
-          <span className="text-xs font-mono font-medium text-slate-300">
-            SYSTEM STATUS:
-          </span>
-          <span
-            className={`text-xs font-mono font-bold px-2 py-0.5 rounded border ${
-              health.status === 'healthy'
-                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                : health.status === 'checking'
-                ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-                : 'bg-rose-500/10 text-rose-400 border-rose-500/30'
-            }`}
-          >
-            {health.status.toUpperCase()}
-          </span>
-        </div>
+  const isOnline = health.status === 'healthy';
 
-        <div className="hidden md:flex items-center space-x-3 text-xs text-cyber-muted font-mono border-l border-cyber-border pl-4">
-          <span className="flex items-center space-x-1">
-            <Cpu className="w-3.5 h-3.5 text-cyber-cyan" />
-            <span>BERT-Tiny (4.39M params): Active</span>
-          </span>
-        </div>
+  return (
+    <header className="h-16 bg-[#FFFCF8] border-b border-[#E4DAD0] px-6 lg:px-8 flex items-center justify-between sticky top-0 z-20 shadow-soft">
+      {/* Breadcrumb Workspace */}
+      <div className="flex items-center space-x-2 text-xs">
+        <span className="font-semibold text-[#817A76]">Studio Workspace</span>
+        <span className="text-[#D5BDA4]">/</span>
+        <span className="font-extrabold text-[#542B38] text-sm tracking-tight font-display">
+          {activeTitle}
+        </span>
+      </div>
+
+      {/* Center/Search */}
+      <div className="hidden md:flex items-center relative w-72 lg:w-96">
+        <Search className="w-4 h-4 absolute left-3 text-[#817A76] pointer-events-none" />
+        <input
+          type="text"
+          placeholder="Search threat indicators, model benchmarks..."
+          className="w-full bg-[#F5F0E9] border border-[#E4DAD0] rounded-xl pl-9 pr-4 py-1.5 text-xs text-[#33302E] placeholder-[#817A76] focus:outline-none focus:border-[#A83F55] transition-colors"
+        />
       </div>
 
       {/* Right Controls */}
       <div className="flex items-center space-x-3">
+        {/* Backend Status Pill */}
+        <div className="flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-[#F5F0E9] border border-[#E4DAD0] text-xs font-mono">
+          <span className={`w-2 h-2 rounded-full ${isOnline ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
+          <span className="text-[#33302E] font-bold text-[11px]">
+            {isOnline ? 'FastAPI :8000' : 'Offline'}
+          </span>
+        </div>
+
+        {/* Refresh health */}
         <button
           onClick={checkStatus}
           disabled={isRefreshing}
-          className="p-2 rounded-lg bg-cyber-surface hover:bg-cyber-subtle text-slate-400 hover:text-slate-200 transition-colors border border-cyber-border"
+          className="p-2 rounded-xl bg-[#F5F0E9] hover:bg-[#EAE1D7] border border-[#E4DAD0] text-[#542B38] transition-colors"
           title="Refresh Backend Health"
         >
-          <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-cyber-accent' : ''}`} />
+          <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-[#A83F55]' : ''}`} />
         </button>
 
-        <div className="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-cyber-surface border border-cyber-border text-xs font-mono">
-          <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-          <span className="text-slate-300">FastAPI Port 8000</span>
+        {/* Notification Bell */}
+        <button 
+          className="p-2 rounded-xl bg-[#F5F0E9] hover:bg-[#EAE1D7] border border-[#E4DAD0] text-[#542B38] relative transition-colors"
+          title="Notifications"
+        >
+          <Bell className="w-4 h-4" />
+          <span className="w-2 h-2 rounded-full bg-[#A83F55] absolute top-1.5 right-1.5"></span>
+        </button>
+
+        {/* User Avatar */}
+        <div className="w-8 h-8 rounded-xl bg-[#542B38] text-white flex items-center justify-center font-bold text-xs shadow-sm">
+          <span>SA</span>
         </div>
       </div>
     </header>

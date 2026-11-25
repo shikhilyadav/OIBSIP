@@ -73,3 +73,38 @@ export async function analyzeMessage(text, modelId = 'hybrid', detailedTokens = 
   return res.json();
 }
 
+export async function analyzeBatch(messages, modelId = 'hybrid') {
+  const res = await fetch(`${API_BASE}/analyze/batch`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      messages: messages,
+      model_preference: modelId
+    })
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.detail || 'Batch analysis failed');
+  }
+  return res.json();
+}
+
+export async function fetchDatasetSummary() {
+  const res = await fetch(`${API_BASE}/dataset/summary`);
+  if (!res.ok) throw new Error('Failed to fetch dataset summary');
+  return res.json();
+}
+
+export async function fetchDatasetRecords(params = {}) {
+  const query = new URLSearchParams();
+  if (params.label) query.append('label', params.label);
+  if (params.search) query.append('search', params.search);
+  if (params.page) query.append('page', params.page);
+  if (params.page_size) query.append('page_size', params.page_size);
+
+  const res = await fetch(`${API_BASE}/dataset/records?${query.toString()}`);
+  if (!res.ok) throw new Error('Failed to fetch dataset records');
+  return res.json();
+}
+
+

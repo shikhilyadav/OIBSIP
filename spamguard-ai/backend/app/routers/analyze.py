@@ -82,3 +82,109 @@ def analyze_message(req: AnalyzeRequest):
     })
 
     return AnalyzeResponse(**response_data)
+
+
+from typing import List, Optional
+from pydantic import BaseModel
+
+class BatchAnalyzeRequest(BaseModel):
+    messages: List[str]
+    model_preference: Optional[str] = "hybrid"
+
+class BatchAnalyzeItemResult(BaseModel):
+    index: int
+    message: str
+    prediction: str
+    confidence: float
+    model_used: str
+    latency_ms: float
+    requires_review: bool
+
+class BatchAnalyzeResponse(BaseModel):
+    total_processed: int
+    spam_count: int
+    ham_count: int
+    review_count: int
+    model_used: str
+    results: List[BatchAnalyzeItemResult]
+
+
+@router.post("/batch", response_model=BatchAnalyzeResponse)
+def analyze_batch(req: BatchAnalyzeRequest):
+    if not req.messages:
+        raise HTTPException(status_code=400, detail="Batch message list cannot be empty.")
+    
+    # Cap batch size at 200 items for responsive throughput
+    messages = req.messages[:200]
+    service = ModelService.get_instance()
+    if not service.is_initialized:
+        service.initialize()
+
+    results = []
+    spam_count = 0
+    ham_count = 0
+    review_count = 0
+    model_pref = (req.model_preference or "hybrid").lower()
+
+    for idx, msg in enumerate(messages):
+        clean_msg = str(msg).strip()
+        if not clean_msg:
+            continue
+        
+        preds = service.predict_all(clean_msg)
+        nb_pred = preds["naive_bayes"]
+        lr_pred = preds["logistic_regression"]
+        bert_pred = preds["bert_tiny"]
+
+        if model_pref in ["nb", "naive_bayes"]:
+            pred_label = nb_pred["predicted_label"]
+            conf = nb_pred["spam_probability"] if pred_label == "SPAM" else nb_pred["ham_confidence"]
+            model_used_name = "Multinomial Naive Bayes"
+            lat = nb_pred["latency_ms"]
+            req_rev = False
+        elif model_pref in ["lr", "logistic_regression"]:
+            pred_label = lr_pred["predicted_label"]
+            conf = lr_pred["spam_probability"] if pred_label == "SPAM" else lr_pred["ham_confidence"]
+            model_used_name = "Logistic Regression"
+            lat = lr_pred["latency_ms"]
+            req_rev = False
+        elif model_pref in ["bert", "bert_tiny"]:
+            pred_label = bert_pred["predicted_label"]
+            conf = bert_pred["spam_probability"] if pred_label == "SPAM" else bert_pred["ham_confidence"]
+            model_used_name = "BERT-Tiny"
+            lat = bert_pred["latency_ms"]
+            req_rev = False
+        else:
+            hybrid_eval = HybridTriageEngine.evaluate(nb_pred, bert_pred, lr_pred)
+            pred_label = hybrid_eval["hybrid_decision"]
+            conf = hybrid_eval["risk_score"] if pred_label == "SPAM" else (1.0 - hybrid_eval["risk_score"])
+            model_used_name = "Hybrid Triage"
+            lat = nb_pred["latency_ms"] + lr_pred["latency_ms"] + bert_pred["latency_ms"]
+            req_rev = hybrid_eval["requires_review"]
+
+        if req_rev:
+            review_count += 1
+        elif pred_label == "SPAM":
+            spam_count += 1
+        else:
+            ham_count += 1
+
+        results.append(BatchAnalyzeItemResult(
+            index=idx + 1,
+            message=clean_msg[:100] + "..." if len(clean_msg) > 100 else clean_msg,
+            prediction=pred_label,
+            confidence=round(conf, 4),
+            model_used=model_used_name,
+            latency_ms=round(lat, 2),
+            requires_review=req_rev
+        ))
+
+    return BatchAnalyzeResponse(
+        total_processed=len(results),
+        spam_count=spam_count,
+        ham_count=ham_count,
+        review_count=review_count,
+        model_used=model_pref,
+        results=results
+    )
+
