@@ -3,19 +3,21 @@
 @tailwind utilities;
 
 @layer base {
-  /* 1. Global default cursor: default for all elements */
+  /* 1. Global default cursor & caret suppression: NO blinking caret on UI elements by default */
   *, *::before, *::after {
     cursor: default;
+    caret-color: transparent !important;
   }
 
   html, body, #root {
     cursor: default;
+    caret-color: transparent !important;
     background-color: #F7F5F0;
     color: #202A28;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
-  /* 2. Headings, labels, cards, typography explicitly default cursor */
+  /* 2. Headings, labels, cards, typography explicitly default cursor and non-editable */
   h1, h2, h3, h4, h5, h6,
   p, span, label,
   div, section, article, aside, header, nav, main, footer,
@@ -23,9 +25,18 @@
   ul, ol, li,
   svg, svg * {
     cursor: default;
+    caret-color: transparent !important;
   }
 
-  /* 3. Interactive controls MUST have pointer cursor */
+  /* 3. Prevent unintended text selection and caret anchoring on dashboard UI chrome in Edge */
+  h1, h2, h3, h4, h5, h6,
+  button, a, label, nav, aside,
+  .card-hover, [role="button"], [role="tab"] {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* 4. Interactive controls MUST have pointer cursor */
   a,
   a *,
   button,
@@ -54,7 +65,7 @@
     cursor: pointer !important;
   }
 
-  /* 4. Disabled elements get not-allowed cursor */
+  /* 5. Disabled elements get not-allowed cursor */
   button:disabled,
   button:disabled *,
   input:disabled,
@@ -69,7 +80,7 @@
     cursor: not-allowed !important;
   }
 
-  /* 5. ONLY real editable text inputs get cursor: text */
+  /* 6. ONLY real editable text inputs get cursor: text and visible caret */
   input[type="text"],
   input[type="number"],
   input[type="search"],
@@ -80,7 +91,15 @@
   textarea,
   [contenteditable="true"] {
     cursor: text !important;
+    caret-color: #063B32 !important;
+    -webkit-user-select: text;
     user-select: text;
+  }
+
+  /* 7. Prevent non-interactive elements from showing accidental focus rectangles in Edge */
+  *:not(input):not(textarea):not(select):not(button):not(a):not([tabindex]):not([contenteditable="true"]):focus {
+    outline: none !important;
+    box-shadow: none !important;
   }
 }
 
