@@ -371,15 +371,15 @@ export default function PricePredictorPage() {
           )}
 
           {result && (
-            <div className="bg-[#073B32] text-white rounded-3xl p-6 lg:p-8 shadow-card space-y-6 border border-[#04241E] relative overflow-hidden">
-              <div className="absolute -right-10 -bottom-10 w-48 h-48 rounded-full bg-[#E6B85C]/10 blur-2xl pointer-events-none"></div>
+            <div className="bg-[#063B32] text-white rounded-3xl p-6 lg:p-8 shadow-card space-y-6 border border-[#032620] relative overflow-hidden">
+              <div className="absolute -right-10 -bottom-10 w-48 h-48 rounded-full bg-[#E8B956]/10 blur-2xl pointer-events-none"></div>
 
               {/* Price Hero */}
               <div className="border-b border-white/10 pb-5 text-center">
-                <span className="text-[10px] uppercase font-bold tracking-widest text-[#E6B85C] block">
+                <span className="text-[10px] uppercase font-bold tracking-widest text-[#E8B956] block">
                   Fair Market Value Estimate
                 </span>
-                <div className="text-4xl font-extrabold tracking-tight text-[#E6B85C] font-display mt-1">
+                <div className="text-4xl font-extrabold tracking-tight text-[#E8B956] font-display mt-1">
                   {result.formatted_price}
                 </div>
                 <div className="text-xs text-[#F7F5F0]/80 mt-1 font-mono">
@@ -388,7 +388,7 @@ export default function PricePredictorPage() {
 
                 {/* Valuation Confidence Range */}
                 <div className="mt-4 p-3 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 text-xs">
-                  <div className="text-[10px] uppercase text-[#E6B85C] font-bold">Estimated Market Band (± MAE)</div>
+                  <div className="text-[10px] uppercase text-[#E8B956] font-bold">Estimated Market Band (± MAE)</div>
                   <div className="font-mono font-bold text-sm mt-0.5 text-white">
                     ₹{(result.lower_bound / 1e5).toFixed(2)}L – ₹{(result.upper_bound / 1e5).toFixed(2)}L
                   </div>
@@ -397,7 +397,7 @@ export default function PricePredictorPage() {
 
               {/* Spec Recap */}
               <div className="space-y-2 text-xs">
-                <span className="text-[10px] uppercase font-bold text-[#E6B85C] tracking-wider block">
+                <span className="text-[10px] uppercase font-bold text-[#E8B956] tracking-wider block">
                   Evaluated Specifications
                 </span>
                 <div className="grid grid-cols-2 gap-2 text-[11px]">
